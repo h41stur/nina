@@ -13,10 +13,12 @@ import os
 import dns.zone
 import dns.resolver
 import dns.query
+import tldextract
 from time import sleep
 from prettytable import PrettyTable
 from bs4 import BeautifulSoup as bs 
 from urllib.parse import urljoin, urlparse
+from googlesearch import search
 
 try:
     import concurrent.futures
@@ -34,6 +36,7 @@ def arguments():
     a.add_argument("--whois", help="Perform a Whois lookup.", required=False, action='store_true')
     a.add_argument("-D", "--dns", help="Look for some DNS information", required=False, action='store_true')
     a.add_argument("-a", "--axfr", help="Try a domain zone transfer attack", required=False, action='store_true')
+    a.add_argument("--dork", help="Try some dorks", action='store_true', required=False)
     a.add_argument("-s", "--subdomains", help="Do a search for any subdomain registered", required=False, action='store_true')
     a.add_argument("-t", "--tech", help="Try to discover technologies in the page", required=False, action='store_true')
     a.add_argument("-c", "--cors", help="Try to find CORS misconfigurations", required=False, action='store_true')
@@ -684,7 +687,6 @@ def sqli_form(f, errors):
         # get target URL
         action = f.attrs.get("action").lower()
     except Exception as e:
-        print(e)
         action = None
 
     # get the form method
@@ -970,8 +972,9 @@ def hunt(domain, store, dirFile, subs, srcPath):
             if edp_xss:
                 f.write(f"\n\n### Possible XSS vectors\n\n")
                 f.write("| URL \t\t\t\t|\n|" + "-"*47 + "|\n")
-                for i in edp_xss:
-                    f.write(f"| {i} |\n")
+                for e in edp_xss:
+                    for i in e:
+                        f.write(f"| {i} |\n")
 
             if edp_json:
                 f.write(f"\n\n### Json files\n\n")
@@ -1275,6 +1278,73 @@ def cors(domain, store, dirfile, subs, srcPath):
         else:
             print("[-] No CORS misconfiguration found.")
 
+# Dorks function
+def dorks(domain, store, dirFile, srcPath):
+
+    print(f"\n[*] Dorking...\n")
+
+    links = {}
+    target = tldextract.extract(str(domain)).domain
+
+    terms = {
+            "[*] .git folders": f"inurl:\"/.git\" {domain} -github",
+            "[*] Backup files": f"site:{domain} ext:bkf | ext:bkp | ext:bak | ext:old | ext:backup",
+            "[*] Exposed documents": f"site:{domain} ext:doc | ext:docx | ext:odt | ext:pdf | ext:rtf | ext:sxw | ext:psw | ext:ppt | ext:pptx | ext:pps | ext:csv",
+            "[*] Confidential documents": f"inurl:{target} not for distribution | confidential | \"employee only\" | proprietary | top secret | classified | trade secret | internal | private filetype:xls OR filetype:csv OR filetype:doc OR filetype:pdf",
+            "[*] Config files": f"site:{domain} ext:xml | ext:conf | ext:cnf | ext:reg | ext:inf | ext:rdp | ext:cfg | ext:txt | ext:ora | ext:env | ext:ini",
+            "[*] Database files": f"site:{domain} ext:sql | ext:dbf | ext:mdb",
+            "[*] Other files": f"site:{domain} intitle:index.of | ext:log | ext:php intitle:phpinfo \"published by the PHP Group\" | inurl:shell | inurl:backdoor | inurl:wso | inurl:cmd | shadow | passwd | boot.ini | inurl:backdoor | inurl:readme | inurl:license | inurl:install | inurl:setup | inurl:config | inurl:\"/phpinfo.php\" | inurl:\".htaccess\" | ext:swf",
+            "[*] SQL errors": f"site:{domain} intext:\"sql syntax near\" | intext:\"syntax error has occurred\" | intext:\"incorrect syntax near\" | intext:\"unexpected end of SQL command\" | intext:\"Warning: mysql_connect()\" | intext:\"Warning: mysql_query()\" | intext:\"Warning: pg_connect()\"",
+            "[*] PHP errors": f"site:{domain} \"PHP Parse error\" | \"PHP Warning\" | \"PHP Error\"",
+            "[*] Wordpress files": f"site:{domain} inurl:wp-content | inurl:wp-includes",
+            "[*] Project management sites": f"site:trello.com | site:*.atlassian.net \"{target}\"",
+            "[*] GitLab/GitHub/Bitbucket": f"site:github.com | site:gitlab.com | site:bitbucket.org \"{target}\"",
+            "[*] Cloud buckets S3/GCP": f"site:.s3.amazonaws.com | site:storage.googleapis.com | site:amazonaws.com \"{target}\"",
+            "[*] Traefik": f"intitle:traefik inurl:8080/dashboard \"{target}\"",
+            "[*] Jenkins": f"intitle:\"Dashboard [Jenkins]\" \"{target}\"",
+            "[*] Login pages": f"site:{domain} inurl:signup | inurl:register | intitle:Signup",
+            "[*] Open redirects": f"site:{domain} inurl:redir | inurl:url | inurl:redirect | inurl:return | inurl:src=http | inurl:r=http",
+            "[*] Code share sites": f"site:sharecode.io | site:controlc.com | site:codepad.co |site:ideone.com | site:codebeautify.org | site:jsdelivr.com | site:codeshare.io | site:codepen.io | site:repl.it | site:jsfiddle.net \"{target}\"",
+            "[*] Other 3rd parties sites": f"site:gitter.im | site:papaly.com | site:productforums.google.com | site:coggle.it | site:replt.it | site:ycombinator.com | site:libraries.io | site:npm.runkit.com | site:npmjs.com | site:scribd.com \"{target}\"",
+            "[*] Stackoverflow": f"site:stackoverflow.com \"{domain}\"",
+            "[*] Pastebin-like sites": f"site:justpaste.it | site:heypasteit.com | site:pastebin.com \"{target}\"",
+            "[*] Apache Struts RCE": f"site:{domain} ext:action | ext:struts | ext:do",
+            "[*] Linkedin employees": f"site:linkedin.com employees {domain}",
+    }
+
+    r = requests.get('https://google.com', verify=False)
+
+    for title, dork in terms.items():
+        result = []
+        try:
+            for r in search(dork, user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36", tld="com", lang="en", num=10, start=0, stop=None, pause=2):
+                result.append(r)
+                if result:
+                    print(title)
+                    for i in result:
+                        print(f"\t- {i}")
+                    links[title] = result
+
+                sleep(5)
+        except KeyboardInterrupt:
+            sys.exit("[!] Interrupt handler received, exiting...\n")
+        except Exception as e:
+            pass
+    
+    if links:
+        if store:
+            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f.write(f"\n\n## Dorks links\n\n")
+            for l in links:
+                f.write(f"\n\n### {l}\n\n")
+                for i in links[l]:
+                    f.write(f"\n\t- {i}")
+            f.close()
+    else:
+        print(f"[!] Too many requests, unable to obtain a response from Google.")
+
+
+
 # Program workflow
 if __name__ == "__main__":
 
@@ -1356,6 +1426,7 @@ if __name__ == "__main__":
             dns_information(domain, store, dirFile)
             zone_transfer(domain, store, dirFile)
             cors(domain, store, dirFile, subs, srcPath)
+            dorks(domain, store, dirFile, srcPath)
             search_backups(domain, store, dirFile, subs)
             tech(domain, store, dirFile, subs)
             find_repos(domain, store, dirFile, subs)
@@ -1435,6 +1506,13 @@ if __name__ == "__main__":
     try:
         if parsing.cors:
             cors(domain, store, dirFile, subs, srcPath)
+    except KeyboardInterrupt:
+        sys.exit("[!] Interrupt handler received, exiting...\n")
+
+    # Google DORKS
+    try:
+        if parsing.dork:
+            dorks(domain, store, dirFile, srcPath)
     except KeyboardInterrupt:
         sys.exit("[!] Interrupt handler received, exiting...\n")
 
