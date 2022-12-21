@@ -1287,29 +1287,29 @@ def dorks(domain, store, dirFile, srcPath):
     target = tldextract.extract(str(domain)).domain
 
     terms = {
-            "[*] .git folders": f"inurl:\"/.git\" {domain} -github",
-            "[*] Backup files": f"site:{domain} ext:bkf | ext:bkp | ext:bak | ext:old | ext:backup",
-            "[*] Exposed documents": f"site:{domain} ext:doc | ext:docx | ext:odt | ext:pdf | ext:rtf | ext:sxw | ext:psw | ext:ppt | ext:pptx | ext:pps | ext:csv",
-            "[*] Confidential documents": f"inurl:{target} not for distribution | confidential | \"employee only\" | proprietary | top secret | classified | trade secret | internal | private filetype:xls OR filetype:csv OR filetype:doc OR filetype:pdf",
-            "[*] Config files": f"site:{domain} ext:xml | ext:conf | ext:cnf | ext:reg | ext:inf | ext:rdp | ext:cfg | ext:txt | ext:ora | ext:env | ext:ini",
-            "[*] Database files": f"site:{domain} ext:sql | ext:dbf | ext:mdb",
-            "[*] Other files": f"site:{domain} intitle:index.of | ext:log | ext:php intitle:phpinfo \"published by the PHP Group\" | inurl:shell | inurl:backdoor | inurl:wso | inurl:cmd | shadow | passwd | boot.ini | inurl:backdoor | inurl:readme | inurl:license | inurl:install | inurl:setup | inurl:config | inurl:\"/phpinfo.php\" | inurl:\".htaccess\" | ext:swf",
-            "[*] SQL errors": f"site:{domain} intext:\"sql syntax near\" | intext:\"syntax error has occurred\" | intext:\"incorrect syntax near\" | intext:\"unexpected end of SQL command\" | intext:\"Warning: mysql_connect()\" | intext:\"Warning: mysql_query()\" | intext:\"Warning: pg_connect()\"",
-            "[*] PHP errors": f"site:{domain} \"PHP Parse error\" | \"PHP Warning\" | \"PHP Error\"",
-            "[*] Wordpress files": f"site:{domain} inurl:wp-content | inurl:wp-includes",
-            "[*] Project management sites": f"site:trello.com | site:*.atlassian.net \"{target}\"",
-            "[*] GitLab/GitHub/Bitbucket": f"site:github.com | site:gitlab.com | site:bitbucket.org \"{target}\"",
-            "[*] Cloud buckets S3/GCP": f"site:.s3.amazonaws.com | site:storage.googleapis.com | site:amazonaws.com \"{target}\"",
-            "[*] Traefik": f"intitle:traefik inurl:8080/dashboard \"{target}\"",
-            "[*] Jenkins": f"intitle:\"Dashboard [Jenkins]\" \"{target}\"",
-            "[*] Login pages": f"site:{domain} inurl:signup | inurl:register | intitle:Signup",
-            "[*] Open redirects": f"site:{domain} inurl:redir | inurl:url | inurl:redirect | inurl:return | inurl:src=http | inurl:r=http",
-            "[*] Code share sites": f"site:sharecode.io | site:controlc.com | site:codepad.co |site:ideone.com | site:codebeautify.org | site:jsdelivr.com | site:codeshare.io | site:codepen.io | site:repl.it | site:jsfiddle.net \"{target}\"",
-            "[*] Other 3rd parties sites": f"site:gitter.im | site:papaly.com | site:productforums.google.com | site:coggle.it | site:replt.it | site:ycombinator.com | site:libraries.io | site:npm.runkit.com | site:npmjs.com | site:scribd.com \"{target}\"",
-            "[*] Stackoverflow": f"site:stackoverflow.com \"{domain}\"",
-            "[*] Pastebin-like sites": f"site:justpaste.it | site:heypasteit.com | site:pastebin.com \"{target}\"",
-            "[*] Apache Struts RCE": f"site:{domain} ext:action | ext:struts | ext:do",
-            "[*] Linkedin employees": f"site:linkedin.com employees {domain}",
+            ".git folders": f"inurl:\"/.git\" {domain} -github",
+            "Backup files": f"site:{domain} ext:bkf | ext:bkp | ext:bak | ext:old | ext:backup",
+            "Exposed documents": f"site:{domain} ext:doc | ext:docx | ext:odt | ext:pdf | ext:rtf | ext:sxw | ext:psw | ext:ppt | ext:pptx | ext:pps | ext:csv",
+            "Confidential documents": f"inurl:{target} not for distribution | confidential | \"employee only\" | proprietary | top secret | classified | trade secret | internal | private filetype:xls OR filetype:csv OR filetype:doc OR filetype:pdf",
+            "Config files": f"site:{domain} ext:xml | ext:conf | ext:cnf | ext:reg | ext:inf | ext:rdp | ext:cfg | ext:txt | ext:ora | ext:env | ext:ini",
+            "Database files": f"site:{domain} ext:sql | ext:dbf | ext:mdb",
+            "Other files": f"site:{domain} intitle:index.of | ext:log | ext:php intitle:phpinfo \"published by the PHP Group\" | inurl:shell | inurl:backdoor | inurl:wso | inurl:cmd | shadow | passwd | boot.ini | inurl:backdoor | inurl:readme | inurl:license | inurl:install | inurl:setup | inurl:config | inurl:\"/phpinfo.php\" | inurl:\".htaccess\" | ext:swf",
+            "SQL errors": f"site:{domain} intext:\"sql syntax near\" | intext:\"syntax error has occurred\" | intext:\"incorrect syntax near\" | intext:\"unexpected end of SQL command\" | intext:\"Warning: mysql_connect()\" | intext:\"Warning: mysql_query()\" | intext:\"Warning: pg_connect()\"",
+            "PHP errors": f"site:{domain} \"PHP Parse error\" | \"PHP Warning\" | \"PHP Error\"",
+            "Wordpress files": f"site:{domain} inurl:wp-content | inurl:wp-includes",
+            "Project management sites": f"site:trello.com | site:*.atlassian.net \"{target}\"",
+            "GitLab/GitHub/Bitbucket": f"site:github.com | site:gitlab.com | site:bitbucket.org \"{target}\"",
+            "Cloud buckets S3/GCP": f"site:.s3.amazonaws.com | site:storage.googleapis.com | site:amazonaws.com \"{target}\"",
+            "Traefik": f"intitle:traefik inurl:8080/dashboard \"{target}\"",
+            "Jenkins": f"intitle:\"Dashboard [Jenkins]\" \"{target}\"",
+            "Login pages": f"site:{domain} inurl:signup | inurl:register | intitle:Signup",
+            "Open redirects": f"site:{domain} inurl:redir | inurl:url | inurl:redirect | inurl:return | inurl:src=http | inurl:r=http",
+            "Code share sites": f"site:sharecode.io | site:controlc.com | site:codepad.co |site:ideone.com | site:codebeautify.org | site:jsdelivr.com | site:codeshare.io | site:codepen.io | site:repl.it | site:jsfiddle.net \"{target}\"",
+            "Other 3rd parties sites": f"site:gitter.im | site:papaly.com | site:productforums.google.com | site:coggle.it | site:replt.it | site:ycombinator.com | site:libraries.io | site:npm.runkit.com | site:npmjs.com | site:scribd.com \"{target}\"",
+            "Stackoverflow": f"site:stackoverflow.com \"{domain}\"",
+            "Pastebin-like sites": f"site:justpaste.it | site:heypasteit.com | site:pastebin.com \"{target}\"",
+            "Apache Struts RCE": f"site:{domain} ext:action | ext:struts | ext:do",
+            "Linkedin employees": f"site:linkedin.com employees {domain}",
     }
 
     r = requests.get('https://google.com', verify=False)
@@ -1321,7 +1321,7 @@ def dorks(domain, store, dirFile, srcPath):
                 if r not in result:
                     result.append(r)
                 if result:
-                    print(f"\n{title}")
+                    print(f"\n[*] {title}")
                     for i in result:
                         print(f"\t- {i}")
                     links[title] = result
