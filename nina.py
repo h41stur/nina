@@ -1335,7 +1335,7 @@ def dorks(domain, store, dirFile, srcPath):
     if links:
         if store:
             f = open(dirFile + "/" + domain + ".report.md", "a")
-            f.write(f"\n\n## Dorks links\n\n")
+            f.write(f"\n\n## Dork links\n\n")
             for l in links:
                 f.write(f"\n\n### {l}\n")
                 for i in links[l]:
