@@ -1548,7 +1548,6 @@ if __name__ == "__main__":
                     f.write(f"| {i[1]} | {i[2]} | {i[4]} | {i[3]} |\n")
             f.close()
 
-    if store:
-        print(f"\n\n[+] Report saved on {dirFile}/{domain}.report.md")
+            print(f"\n\n[+] Report saved on {dirFile}/{domain}.report.md")
 
 
