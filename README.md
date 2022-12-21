@@ -15,7 +15,6 @@ pip3 install -r requirements.txt
 ## Help Panel
 
 ```
-
     NINA RECON TOOL
 
               .--~~,__
@@ -26,7 +25,7 @@ pip3 install -r requirements.txt
 
       by H41stur
 
-usage: nina.py [-h] [-d DOMAIN] [-o] [-A] [--whois] [-D] [-a] [-s] [-t] [-c] [-b] [-w] [--hunt] [-r] [--threads THREADS] [-V]
+usage: nina.py [-h] [-d DOMAIN] [-o] [-A] [--whois] [-D] [-a] [--dork] [-s] [-t] [-c] [-b] [-w] [--hunt] [-r] [--threads THREADS] [-V]
 
 Nina Recon Tool
 
@@ -39,6 +38,7 @@ options:
   --whois               Perform a Whois lookup.
   -D, --dns             Look for some DNS information
   -a, --axfr            Try a domain zone transfer attack
+  --dork                Try some dorks
   -s, --subdomains      Do a search for any subdomain registered
   -t, --tech            Try to discover technologies in the page
   -c, --cors            Try to find CORS misconfigurations
