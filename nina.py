@@ -1318,9 +1318,10 @@ def dorks(domain, store, dirFile, srcPath):
         result = []
         try:
             for r in search(dork, user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36", tld="com", lang="en", num=10, start=0, stop=None, pause=2):
-                result.append(r)
+                if r not in result:
+                    result.append(r)
                 if result:
-                    print(title)
+                    print(f"\n{title}")
                     for i in result:
                         print(f"\t- {i}")
                     links[title] = result
