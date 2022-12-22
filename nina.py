@@ -22,8 +22,13 @@ from googlesearch import search
 from colorama import Fore
 from colorama import init as colorama_init
 
-colorama_init(autoreset=True)
+# Color config
+if os.name == 'nt':
+    colorama_init(autoreset=True, convert=True)
+else:
+    colorama_init(autoreset=True)
 
+# threading
 try:
     import concurrent.futures
 except ImportError:
