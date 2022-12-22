@@ -25,6 +25,7 @@ from colorama import init as colorama_init
 # Color config
 if os.name == 'nt':
     colorama_init(autoreset=True, convert=True)
+    os.system('cls')
 else:
     colorama_init(autoreset=True)
 
