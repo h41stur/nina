@@ -1552,6 +1552,6 @@ if __name__ == "__main__":
                     f.write(f"| {i[1]} | {i[2]} | {i[4]} | {i[3]} |\n")
             f.close()
 
-            print(f"\n\n[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Report saved on {dirFile}/{domain}.report.md")
+            print(f"\n\n[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Report saved on {Fore.LIGHTGREEN_EX}{dirFile}/{domain}.report.md")
 
 
