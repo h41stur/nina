@@ -115,11 +115,12 @@ def dns_information(domain, store, dirFile):
             registry.append(f"TXT Records,{i}")
             if "?all" in i or "~all" in i or "spf" in i and "all" not in i:
                 reg = i
-                vulnerability.append(f"Infra, E-mail Spoofing, Possible, [9.1](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N), TXT Record: {i}")
+                
             print(f"\t {Fore.LIGHTGREEN_EX}-{Fore.RESET} {i}")
 
         if reg:
             print(f"\n[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] {Fore.YELLOW}Possible e-mail spoofing vulnerability in TXT record:{Fore.RESET} {reg}")
+            vulnerability.append(f"Infra, E-mail Spoofing, Possible, [9.1](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N), TXT Record: {reg}")
     
     try:
         ns = dns.resolver.resolve(domain, 'NS')
@@ -977,7 +978,8 @@ def hunt(domain, store, dirFile, subs, srcPath):
         # preparing report
         if store:
             f = open(dirFile + "/" + domain + ".report.md", "a")
-            f.write(f"\n\n## Usefull information\n\n")
+            if edp_xss or edp_json or edp_red or edp_sqli:
+                f.write(f"\n\n## Usefull information\n\n")
 
             if edp_xss:
                 f.write(f"\n\n### Possible XSS vectors\n\n")
@@ -1330,7 +1332,7 @@ def dorks(domain, store, dirFile, srcPath):
             for r in search(dork, user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36", tld="com", lang="en", num=10, start=0, stop=None, pause=2):
                 if r not in result:
                     result.append(r)
-                    sleep(5)
+            sleep(10)
             if result:
                 print(f"\n[{Fore.LIGHTBLUE_EX}*{Fore.RESET}] {title}")
                 for i in result:
@@ -1340,6 +1342,7 @@ def dorks(domain, store, dirFile, srcPath):
             sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
         except Exception as e:
             pass
+        sleep(10)
     
     if links:
         if store:
@@ -1532,7 +1535,7 @@ if __name__ == "__main__":
         infra = []
         if store:
             f = open(dirFile + "/" + domain + ".report.md", "a")
-            f.write(f"\n\n## Vulnerabilities found\n\n")
+            f.write(f"\n\n## Vulnerabilities found\n")
             for i in vulnerability:
                 i = i.split(",")
                 if "WEB" in i[0]:
