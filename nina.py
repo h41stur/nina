@@ -1324,13 +1324,12 @@ def dorks(domain, store, dirFile, srcPath):
             for r in search(dork, user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36", tld="com", lang="en", num=10, start=0, stop=None, pause=2):
                 if r not in result:
                     result.append(r)
-                if result:
-                    print(f"\n[{Fore.LIGHTBLUE_EX}*{Fore.RESET}] {title}")
-                    for i in result:
-                        print(f"\t{Fore.LIGHTGREEN_EX}-{Fore.RESET} {i}")
-                    links[title] = result
-
-                sleep(5)
+                    sleep(5)
+            if result:
+                print(f"\n[{Fore.LIGHTBLUE_EX}*{Fore.RESET}] {title}")
+                for i in result:
+                    print(f"\t{Fore.LIGHTGREEN_EX}-{Fore.RESET} {i}")
+                links[title] = result
         except KeyboardInterrupt:
             sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
         except Exception as e:
