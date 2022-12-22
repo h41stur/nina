@@ -19,11 +19,15 @@ from prettytable import PrettyTable
 from bs4 import BeautifulSoup as bs 
 from urllib.parse import urljoin, urlparse
 from googlesearch import search
+from colorama import Fore
+from colorama import init as colorama_init
+
+colorama_init(autoreset=True)
 
 try:
     import concurrent.futures
 except ImportError:
-    print("[!] Nina needs python 3.4 > ro run!")
+    print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Nina needs python 3.4 > ro run!")
     sys.exit()
 
 # Args parsing
@@ -50,9 +54,9 @@ def arguments():
 
 
 def banner():
-    print("""
-    NINA RECON TOOL
-
+    print(f"""
+    {Fore.LIGHTGREEN_EX}NINA RECON TOOL
+{Fore.LIGHTYELLOW_EX}
               .--~~,__
  :-....,-------`~~'._.'
   `-,,,  ,_      ;'~U' 
@@ -74,7 +78,7 @@ def validDomain(domain):
 # DNS information function
 def dns_information(domain, store, dirFile):
 
-    print(f"\n[*] Discovering some DNS information from {domain}...\n")
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Discovering some DNS information from {domain}...\n")
     sleep(0.2)
     registry = []
 
@@ -86,10 +90,10 @@ def dns_information(domain, store, dirFile):
     except:
         pass
     if mail:
-        print("[+] Mail Servers:")
+        print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Mail Servers:")
         for s in mail:
             registry.append(f"Mail Server,{str(s).split(' ')[1]}")
-            print(f"\t - {str(s).split(' ')[1]}")
+            print(f"\t {Fore.LIGHTGREEN_EX}-{Fore.RESET} {str(s).split(' ')[1]}")
 
     try:
         txt = dns.resolver.resolve(domain, 'TXT')
@@ -99,27 +103,27 @@ def dns_information(domain, store, dirFile):
 
         reg = []
 
-        print("\n[+] TXT Records:")
+        print(f"\n[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] TXT Records:")
         for i in txt:
             i = i.to_text()
             registry.append(f"TXT Records,{i}")
             if "?all" in i or "~all" in i or "spf" in i and "all" not in i:
                 reg = i
                 vulnerability.append(f"Infra, E-mail Spoofing, Possible, [9.1](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N), TXT Record: {i}")
-            print(f"\t - {i}")
+            print(f"\t {Fore.LIGHTGREEN_EX}-{Fore.RESET} {i}")
 
         if reg:
-            print(f"\n[!] Possible e-mail spoofing vulnerability in TXT record: {reg}")
+            print(f"\n[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] {Fore.YELLOW}Possible e-mail spoofing vulnerability in TXT record:{Fore.RESET} {reg}")
     
     try:
         ns = dns.resolver.resolve(domain, 'NS')
     except:
         pass
     if ns:
-        print("\n[+] Name Servers:")
+        print(f"\n[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Name Servers:")
         for n in ns:
             registry.append(f"Name Server,{str(n)}")
-            print(f"\t - {str(n)}")
+            print(f"\t {Fore.LIGHTGREEN_EX}-{Fore.RESET} {str(n)}")
 
     if mail or txt or ns:
         if store:
@@ -139,7 +143,7 @@ def dns_information(domain, store, dirFile):
 # Subdomain discovery function
 def subDomain(domain, store, dirFile):
 
-    print(f"\n[*] Discovering subdomains from {domain}...\n")
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Discovering subdomains from {domain}...\n")
     sleep(0.1)
     subDoms = []
 
@@ -152,7 +156,7 @@ def subDomain(domain, store, dirFile):
             if sub.endswith(domain) and sub not in subDoms:
                 subDoms.append(sub)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
     except:
         pass
 
@@ -164,7 +168,7 @@ def subDomain(domain, store, dirFile):
             if sub.endswith(domain) and sub not in subDoms:
                 subDoms.append(sub)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
     except:
         pass
 
@@ -176,7 +180,7 @@ def subDomain(domain, store, dirFile):
             if sub.endswith(domain) and sub not in subDoms:
                 subDoms.append(sub)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
     except:
         pass
 
@@ -188,7 +192,7 @@ def subDomain(domain, store, dirFile):
             if sub.endswith(domain) and sub not in subDoms:
                 subDoms.append(sub)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
     except:
         pass
 
@@ -200,7 +204,7 @@ def subDomain(domain, store, dirFile):
             if sub.endswith(domain) and sub not in subDoms:
                 subDoms.append(sub)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
     except:
         pass
 
@@ -212,7 +216,7 @@ def subDomain(domain, store, dirFile):
             if sub.endswith(domain) and sub not in subDoms:
                 subDoms.append(sub)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
     except:
         pass
 
@@ -225,7 +229,7 @@ def subDomain(domain, store, dirFile):
             if sub.endswith(domain) and sub not in subDoms:
                 subDoms.append(sub)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
     except:
         pass
 
@@ -238,7 +242,7 @@ def subDomain(domain, store, dirFile):
             f.write("|" + " SUBDOMAINS    \t\t\t\t| IP \t\t\t|\n" + "|" + "-"*47 + "|" + "-"*23 + "|\n")
 
         # interact through list and check the lenght
-        table = PrettyTable(["SUBDOMAINS", "ip"])
+        table = PrettyTable([f"SUBDOMAINS", f"IP"])
         for s in subDoms:
             try:
                 ip = socket.gethostbyname(s)
@@ -250,7 +254,7 @@ def subDomain(domain, store, dirFile):
             table.align["SUBDOMAINS"] = "l"
 
         print(table)
-        print("\nTotal discovered sudomains: " + str(len(subDoms)))
+        print(f"\n{Fore.LIGHTBLUE_EX}Total discovered sudomains: {Fore.LIGHTGREEN_EX}" + str(len(subDoms)))
 
         if store:
             f.write("\n\n**Total discovered sudomains: " + str(len(subDoms)) + "**")
@@ -262,7 +266,7 @@ def subDomain(domain, store, dirFile):
 # Domain zone transfer function
 def zone_transfer(domain, store, dirFile):
 
-    print(f"\n[*] Starting domain zone transfer attack...\n")
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Starting domain zone transfer attack...\n")
     sleep(0.2)
     hosts = []
     ns = []
@@ -282,10 +286,10 @@ def zone_transfer(domain, store, dirFile):
                     if zone:
                         nsVuln.append(n)
                 except Exception as e:
-                    print("[!] NS {} refused zone transfer!\n".format(n))
+                    print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] NS {n} {Fore.LIGHTRED_EX}refused zone transfer!")
                     continue
     except:
-        print("[!] Unable to try zone transfer")
+        print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Unable to try zone transfer")
 
     if nsVuln:
         for i in nsVuln:
@@ -325,7 +329,7 @@ def zone_transfer(domain, store, dirFile):
 
 def find_repos(domain, store, dirFile, subs):
     
-    print(f"\n[*] Looking for public repositories...\n")
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Looking for public repositories...\n")
     sleep(0.2)
 
     if domain not in subs:
@@ -341,7 +345,7 @@ def find_repos(domain, store, dirFile, subs):
             r = requests.get(URL, verify=False, timeout=10)
             if f"{URL},{str(r.status_code)}" not in git_repo:
                 git_repo.append(f"{URL},{str(r.status_code)}")
-            print(f"Git directory in {URL} responds with {str(r.status_code)} status code.")
+            print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Git directory in {URL} responds with {str(r.status_code)} status code.")
         except:
             pass
 
@@ -349,7 +353,7 @@ def find_repos(domain, store, dirFile, subs):
         URL = f"https://bitbucket.org/{domain.split('.')[0]}"
         r = requests.get(URL, verify=False, timeout=20)
         bit.append(f"{URL},{r.status_code}")
-        print(f"\nBitbucket repository in {URL} responds with {str(r.status_code)} status code.")
+        print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Bitbucket repository in {URL} responds with {str(r.status_code)} status code.")
     except:
         pass
 
@@ -358,7 +362,7 @@ def find_repos(domain, store, dirFile, subs):
         r = requests.get(URL, verify=False, timeout=20)
         if str(r.status_code) == "200":
             git.append(f"{URL},{r.status_code}")
-            print(f"\nGithub repository in {URL} responds with {str(r.status_code)} status code.")
+            print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Github repository in {URL} responds with {str(r.status_code)} status code.")
     except:
         pass
 
@@ -367,7 +371,7 @@ def find_repos(domain, store, dirFile, subs):
         r = requests.get(URL, verify=False, timeout=20)
         if str(r.status_code) == "200":
             gitlab.append(f"{URL},{r.status_code}")
-            print(f"\nGitlab repository in {URL} responds with {str(r.status_code)} status code.")
+            print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Gitlab repository in {URL} responds with {str(r.status_code)} status code.")
     except:
         pass
 
@@ -453,15 +457,15 @@ def request_waf(subdomain):
                     wafMatch.extend([score, name])
  
             if wafMatch[0] != 0:
-                print(f"[+] WAF {wafMatch[1]} detected on https://{subdomain}")
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] WAF {wafMatch[1]} detected on https://{subdomain}")
                 return f"{subdomain},{wafMatch[1]}"
             else:
-                print(f"[-] An error has ocurred or unable to enumerate on https://{subdomain}")
+                print(f"[{Fore.LIGHTRED_EX}-{Fore.RESET}] An error has ocurred or unable to enumerate on https://{subdomain}")
                 return None
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
     except:
-        print(f"[-] URL https://{subdomain} not accessible")
+        print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] URL https://{subdomain} not accessible")
         return None
 
 
@@ -469,7 +473,7 @@ def request_waf(subdomain):
 # detect WAF function
 def detect_waf(domain, store, dirFile, subs, srcPath):
 
-    print(f"\n[*] Detecting WAF...\n")
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Detecting WAF...\n")
     sleep(0.2)
     if domain not in subs:
         subs.append(domain)
@@ -507,7 +511,7 @@ def detect_waf(domain, store, dirFile, subs, srcPath):
 # Whois lookup function
 def whois_lookup(domain, store, dirFile):
 
-    print(f"\n[*] Performing WHOIS Lookup...\n")
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Performing WHOIS Lookup...\n")
     import whois
     sleep(2)
     lookup = []
@@ -522,7 +526,7 @@ def whois_lookup(domain, store, dirFile):
             if i not in lookup:
                 lookup.append(f"{i}~{w[i]}")
     except:
-        print(f"\nAn error has ocurred or unable to whois {domain}")
+        print(f"\n[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}]An error has ocurred or unable to whois {domain}")
 
     if lookup:
 
@@ -562,7 +566,7 @@ def request_bkp(subdomain):
                     r = requests.get(URL, verify=False, timeout=4)
                     status = r.status_code
                 except KeyboardInterrupt:
-                    sys.exit("[!] Interrupt handler received, exiting...\n")
+                    sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
                 except:
                     continue
                 if status != 400:
@@ -574,7 +578,7 @@ def request_bkp(subdomain):
 # search backups function
 def search_backups(domain, store, dirFile, subs):
 
-    print(f"\n[*] Searching for backup files...\n")
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Searching for backup files...\n")
     sleep(0.2)
     if domain not in subs:
         subs.append(domain)
@@ -610,7 +614,7 @@ def search_backups(domain, store, dirFile, subs):
             f.close()
 
     else:
-        print("[-] No backup files found")
+        print(f"[{Fore.LIGHTRED_EX}-{Fore.RESET}] No backup files found")
 
 # request tech function
 def request_tech(subdomain):
@@ -627,7 +631,7 @@ def request_tech(subdomain):
 
             if tech != "{}":
                 file = json.loads(json.dumps(tech, sort_keys=True, indent=4))
-                print(f"[+] {subdomain}")
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] {subdomain}")
                 for i in file:
                     try:
                         version = file[i]['versions'][0]
@@ -635,12 +639,12 @@ def request_tech(subdomain):
                         version = "Version not found!"
                     if f"{subdomain},{i},{version}" not in techs:
                         techs.append(f"{subdomain},{i},{version}")
-                    print(f"\t{i} - {version}")
+                    print(f"\t{Fore.LIGHTGREEN_EX}-{Fore.RESET} {i}: {version}")
                 print("\n")
             else:
-                print("[-] No common technologies found")
+                print(f"[{Fore.LIGHTRED_EX}-{Fore.RESET}] No common technologies found")
     except Exception as e:
-        print(f"[-] An error has ocurred or unable to enumerate {subdomain}\n")
+        print(f"[{Fore.LIGHTRED_EX}-{Fore.RESET}] An error has ocurred or unable to enumerate {subdomain}")
 
     if techs:
         return techs
@@ -651,7 +655,7 @@ def request_tech(subdomain):
 # Discover technologies function
 def tech(domain, store, dirFile, subs):
 
-    print(f"\n[*] Searching for technologies...\n")
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Searching for technologies...\n")
     sleep(0.2)
     if domain not in subs:
         subs.append(domain)
@@ -719,7 +723,7 @@ def request_xss(endpoint, references):
                 xss.append(xss_url)
     if xss:
         for i in xss:
-            print(f"[+] Possible XSS vector found in: {i}")
+            print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible XSS vector found in: {Fore.LIGHTGREEN_EX}{i}")
             vulnerability.append(f"WEB, XSS Reflected, Possible, [6.1](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N), URL: {i}")
         return xss
     else:
@@ -734,7 +738,7 @@ def request_json(endpoint):
         json_file.append(endpoint)
     if json_file:
         for i in json_file:
-            print(f"[+] Json file found in: {i}")
+            print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Json file found in: {Fore.LIGHTGREEN_EX}{i}")
             vulnerability.append(f"WEB, Information Disclosure, Possible, [3.7](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N), URL: {i}")
         return json_file
     else:
@@ -752,7 +756,7 @@ def request_or(endpoint, references):
                 or_file.append(red_url)
     if or_file:
         for i in or_file:
-            print(f"[+] Possible open redirect vector found in: {i}")
+            print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible open redirect vector found in: {Fore.LIGHTGREEN_EX}{i}")
             vulnerability.append(f"WEB, Information Disclosure, Possible, [4.7](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:N/A:N), URL: {i}")
         return or_file
     else:
@@ -774,7 +778,7 @@ def request_sqli_url(endpoint, sql_errors):
                         if re.compile(error).search(r):
                             sqli_file.append(endpoint)
                             vulnerability.append(f"WEB, SQLi - {db}, Possible, [8.6](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N, URL: {e})")
-                            print(f"Possible SQLi vector in db {db} in: {endpoint}")
+                            print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible SQLi vector in db {db} in: {endpoint}")
                                     
             except:
                 pass
@@ -829,7 +833,7 @@ def request_sqli_forms(subdomain, sql_errors):
                             if re.compile(error).search(r):
                                 sqli_file.append("{request[0]}, {request[1]}")
                                 vulnerability.append(f"WEB, SQLi - {db}, Possible, [8.6](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N, URL: {schema}{subdomain})")
-                                print(f"Possible SQLi vector in db {db} in: {subdomain}")
+                                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible SQLi vector in db {db} in: {subdomain}")
 
     if sqli_file:
         return sqli_file
@@ -841,7 +845,7 @@ def request_sqli_forms(subdomain, sql_errors):
 # hunt information function
 def hunt(domain, store, dirFile, subs, srcPath):
 
-    print(f"\n[*] Searching for usefull information...\n")
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Searching for usefull information...\n")
     sleep(0.2)
     if domain not in subs:
         subs.append(domain)
@@ -904,38 +908,38 @@ def hunt(domain, store, dirFile, subs, srcPath):
 
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=THREADS)
         # try to find xss vectors
-        print("[*] Searching for XSS vectors...\n")
+        print(f"[{Fore.LIGHTBLUE_EX}*{Fore.RESET}] Searching for XSS vectors...\n")
         data = (pool.submit(request_xss, e, references) for e in endpoints)
         for resp in concurrent.futures.as_completed(data):
             resp = resp.result()
             if resp is not None and resp not in edp_xss:
                 edp_xss.append(resp)
         if not edp_xss:
-            print("\t[-] No XSS vectors found!")
+            print(f"\t[{Fore.LIGHTRED_EX}-{Fore.RESET}] No XSS vectors found!")
 
         # try to find usefull json files
-        print("\n[*] Searching for usefull json files...\n")
+        print(f"\n[{Fore.LIGHTBLUE_EX}*{Fore.RESET}] Searching for usefull json files...\n")
         data = (pool.submit(request_json, e) for e in endpoints)
         for resp in concurrent.futures.as_completed(data):
             resp = resp.result()
             if resp is not None and resp not in edp_json:
                 edp_json.append(resp)
         if not edp_json:
-            print("\t[-] No json file found!")
+            print(f"\t[{Fore.LIGHTRED_EX}-{Fore.RESET}] No json file found!")
 
         # try to find open redirects
-        print("\n[*] Searching for open redirect vectors...\n")
+        print(f"\n[{Fore.LIGHTBLUE_EX}*{Fore.RESET}] Searching for open redirect vectors...\n")
         data = (pool.submit(request_or, e, references) for e in endpoints)
         for resp in concurrent.futures.as_completed(data):
             resp = resp.result()
             if resp is not None and resp not in edp_red:
                 edp_red.append(resp)
         if not edp_red:
-            print("\t[-] No open redirect vectors found!")
+            print(f"\t[{Fore.LIGHTRED_EX}-{Fore.RESET}] No open redirect vectors found!")
 
 
         # try to find SQLi in URL
-        print("\n[*] Searching for SQLi in URLs...\n")
+        print(f"\n[{Fore.LIGHTBLUE_EX}*{Fore.RESET}] Searching for SQLi in URLs...\n")
         data = (pool.submit(request_sqli_url, e, sql_errors) for e in endpoints)
         for resp in concurrent.futures.as_completed(data):
             resp = resp.result()
@@ -943,7 +947,7 @@ def hunt(domain, store, dirFile, subs, srcPath):
                 edp_sqli.append(resp)
 
         # try to find SQLi in forms
-        print("\n[*] Searching for SQLi in forms...\n")
+        print(f"[{Fore.LIGHTBLUE_EX}*{Fore.RESET}] Searching for SQLi in forms...\n")
         try:
             url_sqli = url_original.split("://")[1]
         except:
@@ -961,7 +965,7 @@ def hunt(domain, store, dirFile, subs, srcPath):
                 edp_sqli.append(resp)
 
         if not edp_sqli:
-            print("\t[-] No SQLi vectors found!")
+            print(f"\t[{Fore.LIGHTRED_EX}-{Fore.RESET}] No SQLi vectors found!")
 
 
         # preparing report
@@ -999,7 +1003,7 @@ def hunt(domain, store, dirFile, subs, srcPath):
 
 
     else:
-        print("[-] No information found")
+        print(f"[{Fore.LIGHTRED_EX}-{Fore.RESET}] No information found")
 
 # CORS testing function
 # Based on Corsy - https://github.com/s0md3v/Corsy
@@ -1180,15 +1184,15 @@ def cors_testing(endpoint, headers):
 
     except requests.exceptions.RequestException as e:
         if 'Failed to establish a new connection' in str(e):
-            print(f"[!] URL {endpoint} is unreachable")
+            print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] URL {endpoint} is unreachable")
         elif 'requests.exceptions.TooManyRedirects:' in str(e):
-            print(f"[!] URL {endpoint} has too many redirects")
+            print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] URL {endpoint} has too many redirects")
 
 
 # CORS misconfiguration function
 def cors(domain, store, dirfile, subs, srcPath):
 
-    print(f"\n[*] Searching for CORS misconfiguration...\n")
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Searching for CORS misconfiguration...\n")
     sleep(0.2)
     if domain not in subs:
         subs.append(domain)
@@ -1256,13 +1260,13 @@ def cors(domain, store, dirfile, subs, srcPath):
                 f.close()
             for resp in scan:
                 for i in resp:
-                    print(f"\n[+] {i}")
-                    print(f"\t- Type: {resp[i]['class']}")
-                    print(f"\t- Description: {resp[i]['description']}")
-                    print(f"\t- Severity: {resp[i]['severity']}")
-                    print(f"\t- Exploit: {resp[i]['exploitation']}")
-                    print(f"\t- ACAO Header: {resp[i]['acao header']}")
-                    print(f"\t- ACAC header: {resp[i]['acac header']}")
+                    print(f"\n[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] {i}")
+                    print(f"\t{Fore.LIGHTGREEN_EX}-{Fore.RESET} Type: {resp[i]['class']}")
+                    print(f"\t{Fore.LIGHTGREEN_EX}-{Fore.RESET} Description: {resp[i]['description']}")
+                    print(f"\t{Fore.LIGHTGREEN_EX}-{Fore.RESET} Severity: {resp[i]['severity']}")
+                    print(f"\t{Fore.LIGHTGREEN_EX}-{Fore.RESET} Exploit: {resp[i]['exploitation']}")
+                    print(f"\t{Fore.LIGHTGREEN_EX}-{Fore.RESET} ACAO Header: {resp[i]['acao header']}")
+                    print(f"\t{Fore.LIGHTGREEN_EX}-{Fore.RESET} ACAC header: {resp[i]['acac header']}")
                     vulnerability.append(f"WEB, CORS Misconfiguration, Certain, {resp[i]['severity']}, URL: {i}")
                     if store:
                         f = open(dirFile + "/" + domain + ".report.md", "a")
@@ -1276,12 +1280,12 @@ def cors(domain, store, dirfile, subs, srcPath):
                         f.close()
 
         else:
-            print("[-] No CORS misconfiguration found.")
+            print(f"[{Fore.LIGHTRED_EX}-{Fore.RESET}] No CORS misconfiguration found.")
 
 # Dorks function
 def dorks(domain, store, dirFile, srcPath):
 
-    print(f"\n[*] Dorking...\n")
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Dorking...\n")
 
     links = {}
     target = tldextract.extract(str(domain)).domain
@@ -1321,14 +1325,14 @@ def dorks(domain, store, dirFile, srcPath):
                 if r not in result:
                     result.append(r)
                 if result:
-                    print(f"\n[*] {title}")
+                    print(f"\n[{Fore.LIGHTBLUE_EX}*{Fore.RESET}] {title}")
                     for i in result:
-                        print(f"\t- {i}")
+                        print(f"\t{Fore.LIGHTGREEN_EX}-{Fore.RESET} {i}")
                     links[title] = result
 
                 sleep(5)
         except KeyboardInterrupt:
-            sys.exit("[!] Interrupt handler received, exiting...\n")
+            sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
         except Exception as e:
             pass
     
@@ -1342,7 +1346,7 @@ def dorks(domain, store, dirFile, srcPath):
                     f.write(f"\n\t- {i}")
             f.close()
     else:
-        print(f"[!] Too many requests, unable to obtain a response from Google.")
+        print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Too many requests, unable to obtain a response from Google.")
 
 
 
@@ -1384,7 +1388,7 @@ if __name__ == "__main__":
 
     # Cleaning domain input
     if "." not in domain:
-        print("\nInvalid domain format, please informe in format: example.com")
+        print("\nInvalid domain format, please inform in format: example.com")
         sys.exit(0)
     if domain.startswith("https://"):
         domain = domain.split("https://")[1]
@@ -1404,7 +1408,7 @@ if __name__ == "__main__":
         try:
             os.mkdir(dirFile)
         except FileExistsError:
-            print(f"[-] The directory {dirFile} already exists!")
+            print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] The directory {dirFile} already exists!")
             #sys.exit(0)
         reportPath = dirFile + "/" + domain + ".report.md"
         if os.path.isfile(reportPath):
@@ -1434,7 +1438,7 @@ if __name__ == "__main__":
             detect_waf(domain, store, dirFile, subs, srcPath)
             hunt(domain, store, dirFile, subs, srcPath)
         except KeyboardInterrupt:
-            sys.exit("[!] Interrupt handler received, exiting...\n")
+            sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
         sys.exit(0)
 
 
@@ -1444,7 +1448,7 @@ if __name__ == "__main__":
         if parsing.dns:
             dns_information(domain, store, dirFile)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
     # subdomain enumeration
     subs = []
@@ -1452,70 +1456,70 @@ if __name__ == "__main__":
         if parsing.subdomains:
             subs = subDomain(domain, store, dirFile)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
     # Zone transfer attack
     try:
         if parsing.axfr:
             zone_transfer(domain, store, dirFile)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
     # find repos
     try:
         if parsing.repos:
             find_repos(domain, store, dirFile, subs)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
     # detect WAF
     try:
         if parsing.waf:
             detect_waf(domain, store, dirFile, subs, srcPath)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
     # Perform whois lookup
     try:
         if parsing.whois:
             whois_lookup(domain, store, dirFile)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
     # search for backups
     try:
         if parsing.backups:
             search_backups(domain, store, dirFile, subs)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
     # discover technologies
     try:
         if parsing.tech:
             tech(domain, store, dirFile, subs)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
     # HUNT!
     try:
         if parsing.hunt:
             hunt(domain, store, dirFile, subs, srcPath)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
     # CORS misconfiguration
     try:
         if parsing.cors:
             cors(domain, store, dirFile, subs, srcPath)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
     # Google DORKS
     try:
         if parsing.dork:
             dorks(domain, store, dirFile, srcPath)
     except KeyboardInterrupt:
-        sys.exit("[!] Interrupt handler received, exiting...\n")
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
     # print vulnerabilities
     if vulnerability:
@@ -1548,6 +1552,6 @@ if __name__ == "__main__":
                     f.write(f"| {i[1]} | {i[2]} | {i[4]} | {i[3]} |\n")
             f.close()
 
-            print(f"\n\n[+] Report saved on {dirFile}/{domain}.report.md")
+            print(f"\n\n[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Report saved on {dirFile}/{domain}.report.md")
 
 
