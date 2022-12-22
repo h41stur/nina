@@ -1341,6 +1341,8 @@ def dorks(domain, store, dirFile, srcPath):
         except KeyboardInterrupt:
             sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
         except Exception as e:
+            if "429" in str(e):
+                break
             pass
         sleep(10)
     
@@ -1356,7 +1358,40 @@ def dorks(domain, store, dirFile, srcPath):
     else:
         print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Too many requests, unable to obtain a response from Google.")
 
+def write_vulns():
 
+    # print vulnerabilities
+    if vulnerability:
+        web = []
+        infra = []
+        if store:
+            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f.write(f"\n\n## Vulnerabilities found\n")
+            for i in vulnerability:
+                i = i.split(",")
+                if "WEB" in i[0]:
+                    web.append(i)
+                if "Infra" in i[0]:
+                    infra.append(i)
+
+            if infra:
+                f.write(f"\n\n### Infra\n\n")
+                f.write("| Vulnerability \t\t\t| Confidence \t\t\t| Endpoint \t\t\t| Severity \t\t\t|\n")
+                f.write("|" + "-"*47 + "|" + "-"*47 + "|" + "-"*47 + "|" + "-"*47 + "|\n")
+
+                for i in infra:
+                    f.write(f"| {i[1]} | {i[2]} | {i[4]} | {i[3]} |\n")
+
+            if web:
+                f.write(f"\n\n### WEB\n\n")
+                f.write("| Vulnerability \t\t\t| Confidence \t\t\t| Endpoint \t\t\t| Severity \t\t\t|\n")
+                f.write("|" + "-"*47 + "|" + "-"*47 + "|" + "-"*47 + "|" + "-"*47 + "|\n")
+
+                for i in web:
+                    f.write(f"| {i[1]} | {i[2]} | {i[4]} | {i[3]} |\n")
+            f.close()
+
+            print(f"\n\n[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Report saved on {Fore.LIGHTGREEN_EX}{dirFile}/{domain}.report.md")
 
 # Program workflow
 if __name__ == "__main__":
@@ -1412,7 +1447,7 @@ if __name__ == "__main__":
     # check if --ouput is passed
     if parsing.output:
         store = 1
-        dirFile = str(scriptPath) + "/" + domain
+        dirFile = str(os.getcwd()) + "/" + domain
         try:
             os.mkdir(dirFile)
         except FileExistsError:
@@ -1445,6 +1480,7 @@ if __name__ == "__main__":
             find_repos(domain, store, dirFile, subs)
             detect_waf(domain, store, dirFile, subs, srcPath)
             hunt(domain, store, dirFile, subs, srcPath)
+            write_vulns()
         except KeyboardInterrupt:
             sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
         sys.exit(0)
@@ -1529,37 +1565,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
-    # print vulnerabilities
-    if vulnerability:
-        web = []
-        infra = []
-        if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
-            f.write(f"\n\n## Vulnerabilities found\n")
-            for i in vulnerability:
-                i = i.split(",")
-                if "WEB" in i[0]:
-                    web.append(i)
-                if "Infra" in i[0]:
-                    infra.append(i)
-
-            if infra:
-                f.write(f"\n\n### Infra\n\n")
-                f.write("| Vulnerability \t\t\t| Confidence \t\t\t| Endpoint \t\t\t| Severity \t\t\t|\n")
-                f.write("|" + "-"*47 + "|" + "-"*47 + "|" + "-"*47 + "|" + "-"*47 + "|\n")
-
-                for i in infra:
-                    f.write(f"| {i[1]} | {i[2]} | {i[4]} | {i[3]} |\n")
-
-            if web:
-                f.write(f"\n\n### WEB\n\n")
-                f.write("| Vulnerability \t\t\t| Confidence \t\t\t| Endpoint \t\t\t| Severity \t\t\t|\n")
-                f.write("|" + "-"*47 + "|" + "-"*47 + "|" + "-"*47 + "|" + "-"*47 + "|\n")
-
-                for i in web:
-                    f.write(f"| {i[1]} | {i[2]} | {i[4]} | {i[3]} |\n")
-            f.close()
-
-            print(f"\n\n[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Report saved on {Fore.LIGHTGREEN_EX}{dirFile}/{domain}.report.md")
-
-
+    write_vulns()
