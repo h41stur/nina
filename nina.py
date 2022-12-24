@@ -48,6 +48,7 @@ def arguments():
     a.add_argument("-a", "--axfr", help="Try a domain zone transfer attack", required=False, action='store_true')
     a.add_argument("--dork", help="Try some dorks", action='store_true', required=False)
     a.add_argument("-s", "--subdomains", help="Do a search for any subdomain registered", required=False, action='store_true')
+    a.add_argument("--subtake", help="Check for subdomain takeover vulnerability", required=False, action='store_true')
     a.add_argument("-t", "--tech", help="Try to discover technologies in the page", required=False, action='store_true')
     a.add_argument("-c", "--cors", help="Try to find CORS misconfigurations", required=False, action='store_true')
     a.add_argument("-b", "--backups", help="Try to find some commom backup files in the page. This option works better with -s enabled.", required=False, action='store_true')
@@ -1393,6 +1394,57 @@ def write_vulns():
 
             print(f"\n\n[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Report saved on {Fore.LIGHTGREEN_EX}{dirFile}/{domain}.report.md")
 
+# subdomain takeover request function
+def subtake_request(s):
+
+    try:
+        r = requests.get(f"https://{s}", verify=False, allow_redirects=False, timeout=4)
+        if str(r.status_code) == "404":
+            query = dns.resolver.resolve(s, 'CNAME')
+            for q in query:
+                q = (q.to_text())
+                if s[-8:] not in q:
+                    print(f"\t{Fore.LIGHTGREEN_EX}-{Fore.RESET} Possible subdomain takeover: {Fore.LIGHTGREEN_EX}{s}{Fore.RESET} pointing to {Fore.LIGHTGREEN_EX}{q}{Fore.RESET} with status {Fore.LIGHTRED_EX}404")
+                    return f"{s},{q}"
+                else:
+                    return None
+        else:
+            return None
+    except:
+        return None
+
+
+
+# subdomain takeover function
+def subtake(domain, store, subs, dirFile):
+
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Checking for subdomain takeover vulnerability...\n")
+    sleep(0.2)
+    
+    vulns = []
+
+
+    pool = concurrent.futures.ThreadPoolExecutor(max_workers=THREADS)
+    data = (pool.submit(subtake_request, s) for s in subs)
+    for resp in concurrent.futures.as_completed(data):
+        resp = resp.result()
+        if resp is not None and resp not in vulns:
+            vulns.append(resp)
+
+    if vulns:
+        if store:
+            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f.write(f"\n\n## Possible Subdomain Takeover\n\n")
+            for v in vulns:
+                v = v.split(",")
+                sub = v[0]
+                point = v[1]
+                f.write(f"\n\t- **{sub}** pointing to **{point}**")
+            f.close()
+    else:
+        print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] No subdomain vulnerable.")
+
+
 # Program workflow
 if __name__ == "__main__":
 
@@ -1473,6 +1525,8 @@ if __name__ == "__main__":
             whois_lookup(domain, store, dirFile)
             dns_information(domain, store, dirFile)
             zone_transfer(domain, store, dirFile)
+            if subs:
+                subtake(domain, store, subs, dirFile)
             cors(domain, store, dirFile, subs, srcPath)
             dorks(domain, store, dirFile, srcPath)
             search_backups(domain, store, dirFile, subs)
@@ -1499,6 +1553,15 @@ if __name__ == "__main__":
     try:
         if parsing.subdomains:
             subs = subDomain(domain, store, dirFile)
+    except KeyboardInterrupt:
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
+
+    # subdomain takeover
+    try:
+        if parsing.subtake:
+            if not subs:
+                subs = subDomain(domain, store, dirFile)
+            subtake(domain, store, subs, dirFile)
     except KeyboardInterrupt:
         sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 

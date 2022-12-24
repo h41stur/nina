@@ -25,7 +25,7 @@ pip3 install -r requirements.txt
 
       by H41stur
 
-usage: nina.py [-h] [-d DOMAIN] [-o] [-A] [--whois] [-D] [-a] [--dork] [-s] [-t] [-c] [-b] [-w] [--hunt] [-r] [--threads THREADS] [-V]
+usage: nina.py [-h] [-d DOMAIN] [-o] [-A] [--whois] [-D] [-a] [--dork] [-s] [--subtake] [-t] [-c] [-b] [-w] [--hunt] [-r] [--threads THREADS] [-V]
 
 Nina Recon Tool
 
@@ -40,6 +40,7 @@ options:
   -a, --axfr            Try a domain zone transfer attack
   --dork                Try some dorks
   -s, --subdomains      Do a search for any subdomain registered
+  --subtake             Check for subdomain takeover vulnerability
   -t, --tech            Try to discover technologies in the page
   -c, --cors            Try to find CORS misconfigurations
   -b, --backups         Try to find some commom backup files in the page. This option works better with -s enabled.
