@@ -14,10 +14,11 @@ import dns.zone
 import dns.resolver
 import dns.query
 import tldextract
+import wget
 from time import sleep
 from prettytable import PrettyTable
 from bs4 import BeautifulSoup as bs 
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, urlsplit
 from googlesearch import search
 from colorama import Fore
 from colorama import init as colorama_init
@@ -143,7 +144,19 @@ def dns_information(domain, store, dirFile):
                 i = i.split(",")
                 f.write(f"|{i[0]}|{i[1]}|\n")
 
-        if store:
+            try:
+                filename = dirFile + "/" + "dnsmap.png"
+                url = 'https://dnsdumpster.com/static/map/{}.png'.format(domain)
+                def bar_progress(current, total, width=80):
+                    pass
+                file = wget.download(url, out=filename, bar=bar_progress)
+            except Exception as e:
+                pass
+
+            if file:
+                f.write(f"\n\n### DNS map from {domain}\n\n")
+                f.write(f"![DNS map](./dnsmap.png)")
+
             f.close()
 
 
@@ -1392,7 +1405,8 @@ def write_vulns():
                     f.write(f"| {i[1]} | {i[2]} | {i[4]} | {i[3]} |\n")
             f.close()
 
-            print(f"\n\n[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Report saved on {Fore.LIGHTGREEN_EX}{dirFile}/{domain}.report.md")
+    if store:
+        print(f"\n\n[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Report saved on {Fore.LIGHTGREEN_EX}{dirFile}/{domain}.report.md")
 
 # subdomain takeover request function
 def subtake_request(s):
@@ -1443,6 +1457,7 @@ def subtake(domain, store, subs, dirFile):
             f.close()
     else:
         print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] No subdomain vulnerable.")
+
 
 
 # Program workflow
