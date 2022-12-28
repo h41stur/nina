@@ -1769,7 +1769,7 @@ if __name__ == "__main__":
     
     scriptPath = pathlib.Path(__file__).parent.resolve()
     srcPath = str(scriptPath) + "/src/" 
-    version = "1.0"
+    version = "1.1"
 
     global vulnerability
     vulnerability = []
