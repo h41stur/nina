@@ -1670,84 +1670,108 @@ def spoof(domain):
         if pct and int(pct) != 100:
             spoofable = True
             print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+            print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: The pct tag (percentage) is lower than 100%, DMARC record has instructed the receiving server to reject {pct}% of email that fails DMARC authentication and to send a report about it to the mailto: address in the record.")
         elif spf_rec is None:
             if p is None:
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: Domain has no SPF record or DMARC tag p (policy).")
         elif spf_includes > 10 and p is None:
             spoofable = True
             print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+            print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: Too many include records without DMARC policy, can override each other")
         elif spf_all == "many":
             if p is None:
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for{domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: More than one record \"all\" with no DMARC p tag (policy).")
         elif spf_all and p is None:
             spoofable = True
             print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+            print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: DMARC without p tag (policy)")
         elif spf_all == "-all":
             if p and aspf and sp == "none":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF with hardfail (-all), but DMARC without sp tag (subdomain policy)")
             elif aspf is None and sp == "none":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF with hardfail (-all), but DMARC sp tag (subdomain policy) is none and aspf tag (SPF aligment) missing.")
             elif p == "none" and (aspf == "r" or aspf is None) and sp is None:
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Mailbox dependant spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF with hardfail (-all), but DMARC aspf tag (SPF aligment) is r (relaxed) or missing, p tag (policy) and sp tag (subdomain policy) missing.")
             elif p == "none" and aspf == "r" and (sp == "reject" or sp == "quarentine"):
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF with hardfail (-all), but DMARC aspf tag (SPF aligment) is r (relaxed), p tag (policy) is none and sp tag (subdomain policy) is reject or quarentine. This allows for spoofing within the organization.")
             elif p == "none" and aspf is None and (sp == "reject" or sp == "quarentine"):
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF with hardfail (-all), but DMARC aspf tag (SPF aligment) is missing and sp tag (subdomain policy) is reject or quarentine. This allows for spoofing within the organization.")
             elif p == "none" and aspf is None and sp == "none":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF with hardfail (-all), but DMARC p tag (policy) and sp tag (subdomain policy) is none, and aspf tag (SPF aligment) is missing.")
             else:
                 print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Spoofing not possible for {domain}")
         elif spf_all == "~all":
             if p == "none" and sp == "reject" or sp == "quarentine":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational subdomain spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF with softfail (~all), but DMARC p tag (policy) is none and sp tag (subdomain policy) is reject or quarentine. This allows for spoofing within the organization.")
             elif p == "none" and sp is None:
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF with softfail (~all), but DMARC p tag (policy) is none and sp tag (subdomain policy) is missing.")
             elif p == "none" and sp == "none":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational subdomain spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF with softfail (~all), but DMARC p tag (policy) and sp tag (subdomain policy) is none. This allows for spoofing within the organization.")
             elif (p == "reject" or p == "quarentine") and aspf is None and sp == "none":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF with softfail (~all), but DMARC p tag (policy) is reject or quarentine, aspf tag (SPF aligment) is missing and sp tag (subdomain policy) is none.")
             elif (p == "reject" or p == "quarentine") and aspf and sp == "none":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF with softfail (~all), but DMARC p tag (policy) is reject or quarentine, aspf tag (SPF aligment) exists, but sp tag (subdomain policy) is none.")
             else:
                 print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Spoofing not possible for {domain}")
         elif spf_all == "?all":
             if (p == "reject" or p == "quarentine") and aspf and sp == "none":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain Mailbox dependant spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF neutral (?all), but DMARC p tag (policy) is reject or quarentine, aspf tag (SPF aligment) exists, but sp tag (subdomain policy) is none.")
             elif (p == "reject" or p == "quarentine") and aspf is None and sp == "none":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain Mailbox dependant spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF neutral (?all), but DMARC p tag (policy) is reject or quarentine, aspf tag (SPF aligment) is missing, but sp tag (subdomain policy) is none.")
             elif p == "none" and aspf == "r" and sp is None:
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF neutral (?all), but DMARC p tag (policy) is none, aspf tag (SPF aligment) is r (relaxed) and sp tag (subdomain policy) is missing.")
             elif p == "none" and aspf == "r" and sp == "none":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain or organizational spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF neutral (?all), but DMARC p tag (policy) is none, aspf tag (SPF aligment) is r (relaxed) and sp tag (subdomain policy) is none.")
             elif p == "none" and aspf == "s" or None and sp == "none":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF neutral (?all), but DMARC p tag (policy) is none, aspf tag (SPF aligment) is s (strict) and sp tag (subdomain policy) is none.")
             elif p == "none" and aspf == "s" or None and sp is None:
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain Mailbox dependant spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF neutral (?all), but DMARC p tag (policy) is none, aspf tag (SPF aligment) is s (strict) or missing, and sp tag (subdomain policy) is missing")
             elif p == "none" and aspf and (sp == "reject" or sp == "quarentine"):
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational subdomain spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF neutral (?all), but DMARC p tag (policy) none, aspf tag (SPF aligment) exists, but sp tag (subdomain policy) is reject or quarentine. This allows for spoofing within the organization.")
             elif p == "none" and aspf is None and sp  == "reject":
                 spoofable = True
                 print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational subdomain spoofing for {domain}\n")
+                print(f"\t{Fore.LIGHTGREEN_EX}- Reason{Fore.RESET}: SPF neutral (?all), but DMARC p tag (policy) none, aspf tag (SPF aligment) is missing, and sp tag (subdomain policy) is reject. This allows for spoofing within the organization.")
             else:
                 print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Spoofing not possible for {domain}")
         else:
