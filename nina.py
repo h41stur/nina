@@ -47,6 +47,7 @@ def arguments():
     a.add_argument("-A", "--all", help="Permorm all options at once, except -s and -o (which can be added manually)", required=False, action='store_true')
     a.add_argument("--whois", help="Perform a Whois lookup.", required=False, action='store_true')
     a.add_argument("-D", "--dns", help="Look for some DNS information", required=False, action='store_true')
+    a.add_argument("--spoof", help="Check if domain can be spoofed based on SPF and DMARC records", required=False, action='store_true')
     a.add_argument("-a", "--axfr", help="Try a domain zone transfer attack", required=False, action='store_true')
     a.add_argument("--dork", help="Try some dorks", action='store_true', required=False)
     a.add_argument("-s", "--subdomains", help="Do a search for any subdomain registered", required=False, action='store_true')
@@ -1568,6 +1569,198 @@ def portscan(domain, store, dirFile, subs, srcPath):
     else:
         print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Unable to execute portscan, maybe hackertarget.com API count exceeded!")
 
+# E-mail spoof function
+def spoof(domain):
+
+    print(f"\n{Fore.LIGHTBLUE_EX}[*] Checking SPF and DMARC records...\n")
+    sleep(0.2)
+
+    spoofable = False
+
+    dns_resolver = dns.resolver.Resolver()
+    # get DNS server
+    dns_server = ""
+    dns_resolver.nameservers = ['1.1.1.1']
+    query = dns_resolver.resolve(domain, "SOA")
+    if query:
+        for d in query:
+            d = socket.gethostbyname(str(d.mname))
+            dns_resolver.nameservers[0] = d
+    else:
+        dns_resolver.nameservers[0] = '1.1.1.1'
+
+    # get SPF record
+    spf = None
+    try:
+        spf = dns_resolver.resolve(domain, 'TXT')
+    except dns.resolver.NoAnswer:
+        print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] No TXT record found!")
+        return
+    except:
+        dns_resolver.nameservers[0] = '1.1.1.1'
+        spf = dns_resolver.resolve(domain, 'TXT')
+    spf_rec = None
+    for d in spf:
+        if 'spf1' in str(d):
+            spf_rec = str(d).replace('"', "")
+            break
+    # get all property
+    if spf_rec:
+        n = spf_rec.count(" ~all") + spf_rec.count(" ?all") + spf_rec.count(" -all")
+        if n == 1:
+            spf_all = re.search("[-,~,?]all", spf_rec).group(0)
+        elif n == 0:
+            spf_all = None
+        else:
+            spf_all = "many"
+
+        # get spf includes
+        includes = []
+        n = len(re.compile("[ ,+]a[ , :]").findall(spf_rec))
+        n += len(re.compile("[ ,+]mx[ ,:]").findall(spf_rec))
+        n += len(re.compile("[ ]ptr[ ]").findall(spf_rec))
+        n += len(re.compile("exists[:]").findall(spf_rec))
+        for i in range(0, n):
+            includes.append("nina")
+        for i in spf_rec.split(" "):
+            item = i.replace("include:", "")
+            if "include:" in i:
+                includes.append(item)
+        spf_includes = len(includes)
+    else:
+        print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] No SPF record found!")
+
+    # get DMARC record
+    dmarc_rec = ""
+    try:
+        try:
+            dmarc = dns_resolver.resolve(f"_dmarc.{domain}", 'TXT')
+        except Exception as e:
+            dns_resolver.nameservers[0] = '1.1.1.1'
+            dmarc = dns_resolver.resolve(f"_dmarc.{domain}", 'TXT')
+        dmarc_rec = ""
+        for d in dmarc:
+            if "DMARC" in str(d):
+                dmarc_rec = str(d).replace('"', "")
+                break
+    except:
+        print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] No DMARC record found!.")
+    # get DMARC properties
+    p = None
+    aspf = None
+    sp = None
+    pct = None
+    if dmarc_rec:
+        # get policy
+        if "p=" in dmarc_rec:
+            p = dmarc_rec.split("p=")[1].split(";")[0]
+        # get aspf
+        if "aspf=" in dmarc_rec:
+            aspf = dmarc_rec.split("aspf=")[1].split(";")[0]
+        # get sp
+        if "sp=" in dmarc_rec:
+            sp = dmarc_rec.split("sp=")[1].split(";")[0]
+        # get pct
+        if "pct=" in dmarc_rec:
+            pct = dmarc_rec.split("pct=")[1].split(";")[0]
+
+    # check spoof
+    try:
+        if pct and int(pct) != 100:
+            spoofable = True
+            print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+        elif spf_rec is None:
+            if p is None:
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+        elif spf_includes > 10 and p is None:
+            spoofable = True
+            print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+        elif spf_all == "many":
+            if p is None:
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for{domain}\n")
+        elif spf_all and p is None:
+            spoofable = True
+            print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+        elif spf_all == "-all":
+            if p and aspf and sp == "none":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+            elif aspf is None and sp == "none":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+            elif p == "none" and (aspf == "r" or aspf is None) and sp is None:
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Mailbox dependant spoofing for {domain}\n")
+            elif p == "none" and aspf == "r" and (sp == "reject" or sp == "quarentine"):
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational spoofing for {domain}\n")
+            elif p == "none" and aspf is None and (sp == "reject" or sp == "quarentine"):
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational spoofing for {domain}\n")
+            elif p == "none" and aspf is None and sp == "none":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+            else:
+                print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Spoofing not possible for {domain}")
+        elif spf_all == "~all":
+            if p == "none" and sp == "reject" or sp == "quarentine":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational subdomain spoofing for {domain}\n")
+            elif p == "none" and sp is None:
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+            elif p == "none" and sp == "none":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational subdomain spoofing for {domain}\n")
+            elif (p == "reject" or p == "quarentine") and aspf is None and sp == "none":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+            elif (p == "reject" or p == "quarentine") and aspf and sp == "none":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+            else:
+                print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Spoofing not possible for {domain}")
+        elif spf_all == "?all":
+            if (p == "reject" or p == "quarentine") and aspf and sp == "none":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain Mailbox dependant spoofing for {domain}\n")
+            elif (p == "reject" or p == "quarentine") and aspf is None and sp == "none":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain Mailbox dependant spoofing for {domain}\n")
+            elif p == "none" and aspf == "r" and sp is None:
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible spoofing for {domain}\n")
+            elif p == "none" and aspf == "r" and sp == "none":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain or organizational spoofing for {domain}\n")
+            elif p == "none" and aspf == "s" or None and sp == "none":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain spoofing for {domain}\n")
+            elif p == "none" and aspf == "s" or None and sp is None:
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible subdomain Mailbox dependant spoofing for {domain}\n")
+            elif p == "none" and aspf and (sp == "reject" or sp == "quarentine"):
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational subdomain spoofing for {domain}\n")
+            elif p == "none" and aspf is None and sp  == "reject":
+                spoofable = True
+                print(f"[{Fore.LIGHTGREEN_EX}+{Fore.RESET}] Possible Organizational subdomain spoofing for {domain}\n")
+            else:
+                print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Spoofing not possible for {domain}")
+        else:
+            print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Spoofing not possible for {domain}")
+
+    except Exception as e:
+        print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Unable to check!.")
+
+    if spoofable:
+        vuln = f"Infra, E-mail Spoofing, Possible, [9.1](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N), TXT Record: \"{spf_rec}\""
+        if not vuln in vulnerability:
+            vulnerability.append(vuln)
+
+
 # Program workflow
 if __name__ == "__main__":
 
@@ -1647,7 +1840,8 @@ if __name__ == "__main__":
         try:
             whois_lookup(domain, store, dirFile)
             dns_information(domain, store, dirFile)
-            zone_transfer(domain, store, dirFile)
+            spoof(domain, store, dirFile, srcPath)
+            zone_transfer(domain)
             portscan(domain, store, dirFile, subs, srcPath)
             if subs:
                 subtake(domain, store, subs, dirFile)
@@ -1756,6 +1950,13 @@ if __name__ == "__main__":
     try:
         if parsing.portscan:
             portscan(domain, store, dirFile, subs, srcPath)
+    except KeyboardInterrupt:
+        sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
+
+    # E-mail spoof
+    try:
+        if parsing.spoof:
+            spoof(domain)
     except KeyboardInterrupt:
         sys.exit(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Interrupt handler received, exiting...\n")
 
