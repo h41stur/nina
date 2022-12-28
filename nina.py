@@ -146,7 +146,8 @@ def dns_information(domain, store, dirFile):
             for i in registry:
                 i = i.split(",")
                 f.write(f"|{i[0]}|{i[1]}|\n")
-
+    
+            file = ""
             try:
                 filename = dirFile + "/" + "dnsmap.png"
                 url = 'https://dnsdumpster.com/static/map/{}.png'.format(domain)
