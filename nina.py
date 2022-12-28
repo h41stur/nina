@@ -1841,7 +1841,7 @@ if __name__ == "__main__":
         try:
             whois_lookup(domain, store, dirFile)
             dns_information(domain, store, dirFile)
-            spoof(domain, store, dirFile, srcPath)
+            spoof(domain)
             zone_transfer(domain)
             portscan(domain, store, dirFile, subs, srcPath)
             if subs:
