@@ -1476,7 +1476,7 @@ def portscan_request(s):
     try:
         r = requests.get(hackertarget, verify=False)
     except Exception as e:
-        return result
+        return None
 
     soup = bs(r.text, 'html.parser')
     inputs = soup.find_all('input')
@@ -1491,7 +1491,10 @@ def portscan_request(s):
     if name_of_nonce_field:
         body = {"theinput": s, "thetest": "nmap", "name_of_nonce_field": name_of_nonce_field, "_wp_http_referer": "%2Fnmap-online-port-scanner%2F"}
 
-        r = requests.post(hackertarget, headers=header, data=body)
+        try:
+            r = requests.post(hackertarget, headers=header, data=body)
+        except Exception as e:
+            return None
         soup = bs(r.text, 'html.parser')
         scan = soup.find_all('pre')
         for value in scan:
@@ -1515,9 +1518,9 @@ def portscan_request(s):
         if ports:
             result["host"] = s
             result["result"] = ports
-
-
-        return result
+            return result
+        else:
+            return None
 
 
 # portscan function
@@ -1534,8 +1537,8 @@ def portscan(domain, store, dirFile, subs, srcPath):
     pool = concurrent.futures.ThreadPoolExecutor(max_workers=THREADS)
     data = (pool.submit(portscan_request, s) for s in subs)
     for resp in concurrent.futures.as_completed(data):
+        resp = resp.result()
         if resp is not None and resp not in results:
-            resp = resp.result()
             results.append(resp)
 
     if results:
@@ -1563,7 +1566,7 @@ def portscan(domain, store, dirFile, subs, srcPath):
                         f.write(f"|{r['port']}\t\t\t\t|{r['status']}\t\t\t\t|{r['service']}\t\t\t\t|\n")
                     f.close()
     else:
-        print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Unable to execute portscan!")
+        print(f"[{Fore.LIGHTYELLOW_EX}!{Fore.RESET}] Unable to execute portscan, maybe hackertarget.com API count exceeded!")
 
 # Program workflow
 if __name__ == "__main__":
