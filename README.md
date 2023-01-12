@@ -64,19 +64,33 @@ options:
 ## Features
 
 :heavy_check_mark: Perform a Whois lookup.
+
 :heavy_check_mark: Search for useful DNS information.
+
 :heavy_check_mark: Search for email spoofing vulnerability.
+
 :heavy_check_mark: Domain zone transfer attack.
+
 :heavy_check_mark: Perform Google dorks.
+
 :heavy_check_mark: Search for subdomains.
+
 :heavy_check_mark: Perform portscan.
+
 :heavy_check_mark: Check for subdomain takeover.
+
 :heavy_check_mark: Ennumerate some techs on pages.
+
 :heavy_check_mark: Check for CORS misconfiguration.
+
 :heavy_check_mark: Search for common backup files.
+
 :heavy_check_mark: Try to detect WAF.
+
 :heavy_check_mark: Check for common vulnerabilities, like SQLi, XSS and Open Redirect.
+
 :heavy_check_mark: Search for git repos.
+
 :heavy_check_mark: Search for employees emails.
 
 ### 💐💐💐 Tribute to Nina 💐💐💐
