@@ -31,11 +31,11 @@ jobs:
       # Build python script into a stand-alone exe
       - uses: jimkring/python-script-to-exe@v0.2.0
         with:
-          script-name: test.py
+          script-name: nina.py
       
       # Uploads artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: exe
-          path: build/test.exe
+          path: build/nina.exe
