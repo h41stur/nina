@@ -37,7 +37,7 @@ jobs:
       # Install dependencies
       - name: Install Dependencies
         run: |
-          pip install -r requirements.txt
+          pip install -r requirements.txt --use-pep517
 
       # Build python script into a stand-alone exe
       - uses: jimkring/python-script-to-exe@v0.2.0
