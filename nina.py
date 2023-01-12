@@ -22,6 +22,7 @@ from src.subdomain_takeover import subtake
 from src.zone_transfer import zone_transfer
 from src.subdomains import subDomain
 from src.dns_information import dns_information, whois_lookup
+from src.find_emails import find_emails
 from src.colors import YELLOW, GREEN, RED, BLUE, RESET
 
 # Color config
@@ -59,6 +60,7 @@ def arguments():
     a.add_argument("-w", "--waf", help="Try to detect WAF on the page.", required=False, action='store_true')
     a.add_argument("--hunt", help="Try to find usefull information about exploiting vectors.", required=False, action='store_true')
     a.add_argument("-r", "--repos", help="Try to discover valid repositories of the domain. This option works better with -s enabled.", action='store_true', required=False)
+    a.add_argument("--email", help="Try to find some emails from symem.info. Max 50 emails.", nargs='?', const=50, type=int)
     a.add_argument("--threads", help="Threads (default 5)", type=int, default=5)
     a.add_argument("-V", "--version", help="Show the version", required=False, action='store_true')
     return a.parse_args()
@@ -138,6 +140,8 @@ if __name__ == "__main__":
 
     # threads
     THREADS = parsing.threads
+    # max emails to list
+    MAX_EMAILS = parsing.email
 
     # show version
     if parsing.version:
@@ -160,7 +164,9 @@ if __name__ == "__main__":
     domain = f"{extracted.domain}.{extracted.suffix}"
     validDomain(domain)
 
+
     # check if --ouput is passed
+    reportPath = ""
     if parsing.output:
         store = 1
         dirFile = str(os.getcwd()) + "/" + domain
@@ -197,6 +203,7 @@ if __name__ == "__main__":
                 subtake(domain, store, subs, dirFile, THREADS)
             cors(domain, store, dirFile, subs, srcPath, vulnerability, THREADS)
             dorks(domain, store, dirFile)
+            find_emails(domain, store, reportPath, MAX_EMAILS, THREADS)
             search_backups(domain, store, dirFile, subs, THREADS)
             tech(domain, store, dirFile, subs, THREADS)
             find_repos(domain, store, dirFile, subs)
@@ -255,6 +262,9 @@ if __name__ == "__main__":
         # E-mail spoof
         if parsing.spoof:
             spoof(domain, vulnerability)
+        # Find emails
+        if parsing.email:
+            find_emails(domain, store, reportPath, MAX_EMAILS, THREADS)
     except KeyboardInterrupt:
         sys.exit(f"[{YELLOW}!{RESET}] Interrupt handler received, exiting...\n")
 
