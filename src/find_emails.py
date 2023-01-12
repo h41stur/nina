@@ -84,8 +84,8 @@ def find_emails(domain, store, reportPath, MAX_EMAILS, THREADS):
 
         if emails:
             print(f"[{GREEN}+{RESET}] {len(emails)} Emails found:\n")
-            for i in emails:
-                print(f"\t{GREEN}-{RESET} {i}")
+            for e in emails:
+                print(f"\t{GREEN}-{RESET} {e}")
             if store:
                 f = open(reportPath, "a")
                 f.write(f"\n\n## Emails found\n\n")
@@ -93,6 +93,8 @@ def find_emails(domain, store, reportPath, MAX_EMAILS, THREADS):
                 for e in emails:
                     f.write(f"\n- **{e}**")
                 f.close()
+        else:
+            print(f"[{YELLOW}!{RESET}] No emails found.")
     except KeyboardInterrupt:
         sys.exit(f"[{YELLOW}!{RESET}] Interrupt handler received, exiting...\n")
     except:

@@ -58,7 +58,7 @@ def request_xss(endpoint, references, vulnerability):
                 xss.append(xss_url)
     if xss:
         for i in xss:
-            print(f"[{GREEN}+{RESET}] Possible XSS vector found in: {GREEN}{i}")
+            print(f"[{GREEN}+{RESET}] Possible XSS vector found in: {GREEN}{i}\n")
             vulnerability.append(
                 f"WEB, XSS Reflected, Possible, [6.1](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N), URL: {i}")
         return xss
@@ -74,7 +74,7 @@ def request_json(endpoint, vulnerability):
         json_file.append(endpoint)
     if json_file:
         for i in json_file:
-            print(f"[{GREEN}+{RESET}] Json file found in: {GREEN}{i}")
+            print(f"[{GREEN}+{RESET}] Json file found in: {GREEN}{i}\n")
             vulnerability.append(
                 f"WEB, Information Disclosure, Possible, [3.7](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N), URL: {i}")
         return json_file
@@ -93,7 +93,7 @@ def request_or(endpoint, references, vulnerability):
                 or_file.append(red_url)
     if or_file:
         for i in or_file:
-            print(f"[{GREEN}+{RESET}] Possible open redirect vector found in: {GREEN}{i}")
+            print(f"[{GREEN}+{RESET}] Possible open redirect vector found in: {GREEN}{i}\n")
             vulnerability.append(
                 f"WEB, Open Redirect, Possible, [4.3](https://www.first.org/cvss/calculator/3.1#CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:N), URL: {i}")
         return or_file
