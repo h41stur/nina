@@ -23,6 +23,7 @@ from src.zone_transfer import zone_transfer
 from src.subdomains import subDomain
 from src.dns_information import dns_information, whois_lookup
 from src.find_emails import find_emails
+from src.ssl_information import ssl_information
 from src.colors import YELLOW, GREEN, RED, BLUE, RESET
 
 # Color config
@@ -54,6 +55,7 @@ def arguments():
     a.add_argument("-s", "--subdomains", help="Do a search for any subdomain registered", required=False, action='store_true')
     a.add_argument("-p", "--portscan", help="Simple portscan made on https://hackertarget.com/nmap-online-port-scanner", action='store_true', required=False)
     a.add_argument("--subtake", help="Check for subdomain takeover vulnerability", required=False, action='store_true')
+    a.add_argument("--ssl", help="Extract information from SSL Certificate.", required=False, action='store_true')
     a.add_argument("-t", "--tech", help="Try to discover technologies in the page", required=False, action='store_true')
     a.add_argument("-c", "--cors", help="Try to find CORS misconfigurations", required=False, action='store_true')
     a.add_argument("-b", "--backups", help="Try to find some commom backup files in the page. This option works better with -s enabled.", required=False, action='store_true')
@@ -201,6 +203,7 @@ if __name__ == "__main__":
             portscan(domain, store, dirFile, subs, THREADS)
             if subt:
                 subtake(domain, store, subs, dirFile, THREADS)
+            ssl_information(domain, store, srcPath, reportPath, subs, THREADS)
             cors(domain, store, dirFile, subs, srcPath, vulnerability, THREADS)
             dorks(domain, store, dirFile)
             find_emails(domain, store, reportPath, MAX_EMAILS, THREADS)
@@ -265,6 +268,9 @@ if __name__ == "__main__":
         # Find emails
         if parsing.email:
             find_emails(domain, store, reportPath, MAX_EMAILS, THREADS)
+        # SSL certificate information
+        if parsing.ssl:
+            ssl_information(domain, store, srcPath, reportPath, subs, THREADS)
     except KeyboardInterrupt:
         sys.exit(f"[{YELLOW}!{RESET}] Interrupt handler received, exiting...\n")
 
