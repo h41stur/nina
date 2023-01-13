@@ -31,7 +31,7 @@ This will display help for the tool. Here are all the switches it supports.
 
       by H41stur
 
-usage: nina.py [-h] [-d DOMAIN] [-o] [-A] [--whois] [-D] [--spoof] [-a] [--dork] [-s] [-p] [--subtake] [-t] [-c] [-b] [-w] [--hunt] [-r] [--email [EMAIL]] [--threads THREADS] [-V]
+usage: nina.py [-h] [-d DOMAIN] [-o] [-A] [--whois] [-D] [--spoof] [-a] [--dork] [-s] [-p] [--subtake] [--ssl] [-t] [-c] [-b] [-w] [--hunt] [-r] [--email [EMAIL]] [--threads THREADS] [-V]
 
 Nina Recon Tool
 
@@ -42,13 +42,14 @@ options:
   -o, --output          Save a directory containing Markdown file with recon report.
   -A, --all             Permorm all options at once, except -s and -o (which can be added manually)
   --whois               Perform a Whois lookup.
-  -D, --dns             Search for some DNS information.
+  -D, --dns             Look for some DNS information
   --spoof               Check if domain can be spoofed based on SPF and DMARC records
   -a, --axfr            Try a domain zone transfer attack
   --dork                Try some dorks
-  -s, --subdomains      Search for any subdomain registered
+  -s, --subdomains      Do a search for any subdomain registered
   -p, --portscan        Simple portscan made on https://hackertarget.com/nmap-online-port-scanner
   --subtake             Check for subdomain takeover vulnerability
+  --ssl                 Extract information from SSL Certificate.
   -t, --tech            Try to discover technologies in the page
   -c, --cors            Try to find CORS misconfigurations
   -b, --backups         Try to find some commom backup files in the page. This option works better with -s enabled.
