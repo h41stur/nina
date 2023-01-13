@@ -80,7 +80,7 @@ def extract_ssl(s, srcPath):
 
     except:
         sock.close()
-        print(f"[{RED}-{RESET}] An error has ocurred or unable to enumerate {s}")
+        print(f"[{RED}-{RESET}] An error has ocurred or unable to enumerate {RED}{s}")
         pass
 
 
@@ -100,7 +100,7 @@ def ssl_information(domain, store, srcPath, reportPath, subs, THREADS):
 
     if result:
         for pair in result:
-            print(f"\n[{GREEN}+{RESET}] Results from {pair['URL']}\n")
+            print(f"\n[{GREEN}+{RESET}] Results from {YELLOW}{pair['URL']}\n")
             for i in pair["info"]:
                 for key, value in i.items():
                     if isinstance(value, tuple):
