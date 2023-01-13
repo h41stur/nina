@@ -13,6 +13,7 @@ except ImportError:
     sys.exit()
 
 result = []
+partial = []
 values = {}
 
 def parse(value, key):
@@ -32,9 +33,11 @@ def parse(value, key):
                     pass
         else:
             d = {key: value}
-            result.append(d)
+            if d not in partial:
+                partial.append(d)
 
 def extract_ssl(s, srcPath):
+    partial = []
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(5)
     try:
@@ -62,12 +65,18 @@ def extract_ssl(s, srcPath):
                 parse(value, key)
                 for key, value in values.items():
                     d = {key: value}
-                    result.append(d)
+                    if d not in partial:
+                        partial.append(d)
                 values.clear()
             else:
                 d = {key: value}
-                result.append(d)
+                if d not in partial:
+                    partial.append(d)
         sock.close()
+
+        if partial is not None:
+            resp = {"URL": s, "info": partial}
+            return resp
 
     except:
         sock.close()
@@ -86,22 +95,28 @@ def ssl_information(domain, store, srcPath, reportPath, subs, THREADS):
     data = (pool.submit(extract_ssl, s, srcPath) for s in subs)
     for resp in concurrent.futures.as_completed(data):
         resp = resp.result()
+        if resp is not None:
+            result.append(resp)
 
     if result:
         for pair in result:
-            for key, value in pair.items():
-                if isinstance(value, tuple):
-                    value = value[0]
-                print(f"{GREEN}-{RESET} {key}: {GREEN}{value}")
-        if store:
-            f = open(reportPath, "a")
-            f.write(f"\n\n## SSL Certificate Information\n\n")
-            f.write("|" + " KEY \t\t\t\t| VALUE \t\t\t|\n" + "|" + "-" * 47 + "|" + "-" * 23 + "|\n")
-            for pair in result:
-                for key, value in pair.items():
+            print(f"\n[{GREEN}+{RESET}] Results from {pair['URL']}\n")
+            for i in pair["info"]:
+                for key, value in i.items():
                     if isinstance(value, tuple):
                         value = value[0]
-                    f.write(f"| {key} | {value} |\n")
+                    print(f"{GREEN}-{RESET} {key}: {GREEN}{value}")
+        if store:
+            f = open(reportPath, "a")
+            f.write(f"\n\n## SSL Certificate Information\n")
+            for pair in result:
+                f.write(f"\n### Results from {pair['URL']}\n")
+                f.write("|" + " KEY \t\t\t\t| VALUE \t\t\t|\n" + "|" + "-" * 47 + "|" + "-" * 23 + "|\n")
+                for i in pair["info"]:
+                    for key, value in i.items():
+                        if isinstance(value, tuple):
+                            value = value[0]
+                        f.write(f"| {key} | {value} |\n")
             f.close()
 
     else:
