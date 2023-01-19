@@ -53,7 +53,7 @@ def arguments():
     a.add_argument("-a", "--axfr", help="Try a domain zone transfer attack", required=False, action='store_true')
     a.add_argument("--dork", help="Try some dorks", action='store_true', required=False)
     a.add_argument("-s", "--subdomains", help="Do a search for any subdomain registered", required=False, action='store_true')
-    a.add_argument("-p", "--portscan", help="Simple portscan made on https://hackertarget.com/nmap-online-port-scanner", action='store_true', required=False)
+    a.add_argument("-p", "--portscan", help="Simple portscan and banner grabbing on top 100 ports (makes a huge noise on the network).", action='store_true', required=False)
     a.add_argument("--subtake", help="Check for subdomain takeover vulnerability", required=False, action='store_true')
     a.add_argument("--ssl", help="Extract information from SSL Certificate.", required=False, action='store_true')
     a.add_argument("-t", "--tech", help="Try to discover technologies in the page", required=False, action='store_true')
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     
     scriptPath = pathlib.Path(__file__).parent.resolve()
     srcPath = str(scriptPath) + "/src/" 
-    version = "2.0.0"
+    version = "2.0.1"
 
     vulnerability = []
 
@@ -200,7 +200,7 @@ if __name__ == "__main__":
             dns_information(domain, store, dirFile, vulnerability)
             spoof(domain, vulnerability)
             zone_transfer(domain, store, dirFile, vulnerability)
-            portscan(domain, store, dirFile, subs, THREADS)
+            portscan(domain, store, reportPath, subs, THREADS)
             if subt:
                 subtake(domain, store, subs, dirFile, THREADS)
             ssl_information(domain, store, srcPath, reportPath, subs, THREADS)
@@ -261,7 +261,7 @@ if __name__ == "__main__":
             dorks(domain, store, dirFile)
         # Portscan
         if parsing.portscan:
-            portscan(domain, store, dirFile, subs, THREADS)
+            portscan(domain, store, reportPath, subs, THREADS)
         # E-mail spoof
         if parsing.spoof:
             spoof(domain, vulnerability)
