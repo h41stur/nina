@@ -50,7 +50,7 @@ options:
   -p, --portscan        Simple portscan and banner grabbing on top 100 ports (makes a huge noise on the network).
   --subtake             Check for subdomain takeover vulnerability
   --ssl                 Extract information from SSL Certificate.
-  -jl, --js-links       Try do find endpoints in JavaScript files.
+  -jl, --js-links       Try do find endpoints and parameters in JavaScript files.
   -t, --tech            Try to discover technologies in the page
   -c, --cors            Try to find CORS misconfigurations
   -b, --backups         Try to find some commom backup files in the page. This option works better with -s enabled.

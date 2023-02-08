@@ -57,7 +57,7 @@ def arguments():
     a.add_argument("-p", "--portscan", help="Simple portscan and banner grabbing on top 100 ports (makes a huge noise on the network).", action='store_true', required=False)
     a.add_argument("--subtake", help="Check for subdomain takeover vulnerability", required=False, action='store_true')
     a.add_argument("--ssl", help="Extract information from SSL Certificate.", required=False, action='store_true')
-    a.add_argument("-jl", "--js-links", help="Try do find endpoints in JavaScript files.", required=False, action='store_true')
+    a.add_argument("-jl", "--js-links", help="Try do find endpoints and parameters in JavaScript files.", required=False, action='store_true')
     a.add_argument("-t", "--tech", help="Try to discover technologies in the page", required=False, action='store_true')
     a.add_argument("-c", "--cors", help="Try to find CORS misconfigurations", required=False, action='store_true')
     a.add_argument("-b", "--backups", help="Try to find some commom backup files in the page. This option works better with -s enabled.", required=False, action='store_true')
