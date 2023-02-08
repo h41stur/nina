@@ -47,14 +47,14 @@ options:
   -a, --axfr            Try a domain zone transfer attack
   --dork                Try some dorks
   -s, --subdomains      Do a search for any subdomain registered
-  -p, --portscan        Simple portscan made on https://hackertarget.com/nmap-online-port-scanner
+  -p, --portscan        Simple portscan and banner grabbing on top 100 ports (makes a huge noise on the network).
   --subtake             Check for subdomain takeover vulnerability
   --ssl                 Extract information from SSL Certificate.
+  -jl, --js-links       Try do find endpoints in JavaScript files.
   -t, --tech            Try to discover technologies in the page
   -c, --cors            Try to find CORS misconfigurations
   -b, --backups         Try to find some commom backup files in the page. This option works better with -s enabled.
   -w, --waf             Try to detect WAF on the page.
-  --hunt                Try to find usefull information about exploiting vectors.
   -r, --repos           Try to discover valid repositories of the domain. This option works better with -s enabled.
   --email [EMAIL]       Try to find some emails from symem.info. Max 50 emails.
   --threads THREADS     Threads (default 5)
