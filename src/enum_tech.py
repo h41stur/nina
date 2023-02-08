@@ -46,7 +46,7 @@ def request_tech(subdomain):
 
 
 # Discover technologies function
-def tech(domain, store, dirFile, subs, THREADS):
+def tech(domain, store, reportPath, subs, THREADS):
     print(f"\n{BLUE}[*] Searching for technologies...\n")
     sleep(0.2)
     if domain not in subs:
@@ -63,7 +63,7 @@ def tech(domain, store, dirFile, subs, THREADS):
     if techsWeb:
 
         if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f = open(reportPath, "a")
             f.write(f"\n\n## Common technologies found\n\n")
             f.write(
                 "|" + " URL \t\t\t\t| TECHNOLOGY \t\t\t| VERSION \t\t\t|\n" + "|" + "-" * 47 + "|" + "-" * 23 + "|" + "-" * 23 + "|\n")

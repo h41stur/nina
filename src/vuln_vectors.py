@@ -183,7 +183,7 @@ def request_sqli_forms(subdomain, sql_errors, vulnerability):
 
 
 # hunt information function
-def hunt(domain, store, dirFile, subs, srcPath, vulnerability, THREADS, url_original):
+def hunt(domain, store, reportPath, subs, srcPath, vulnerability, THREADS, url_original):
     print(f"\n{BLUE}[*] Searching for usefull information...\n")
     sleep(0.2)
     if domain not in subs:
@@ -312,7 +312,7 @@ def hunt(domain, store, dirFile, subs, srcPath, vulnerability, THREADS, url_orig
 
         # preparing report
         if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f = open(reportPath, "a")
             if edp_xss or edp_json or edp_red or edp_sqli:
                 f.write(f"\n\n## Usefull information\n\n")
 

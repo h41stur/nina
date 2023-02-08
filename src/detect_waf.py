@@ -72,7 +72,7 @@ def request_waf(subdomain, srcPath):
 
 
 # detect WAF function
-def detect_waf(domain, store, dirFile, subs, srcPath, THREADS):
+def detect_waf(domain, store, reportPath, subs, srcPath, THREADS):
 
     print(f"\n{BLUE}[*] Detecting WAF...\n")
     sleep(0.2)
@@ -99,7 +99,7 @@ def detect_waf(domain, store, dirFile, subs, srcPath, THREADS):
 
     if WAF:
         if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f = open(reportPath, "a")
             f.write(f"\n\n## WAFs detected on scope {domain}\n\n")
             f.write("|" + " URL \t\t\t\t| WAF \t\t\t|\n" + "|" + "-" *47 + "|" + "-" *23 + "|\n")
 

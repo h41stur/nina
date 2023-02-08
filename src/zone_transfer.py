@@ -6,7 +6,7 @@ from prettytable import PrettyTable
 from src.colors import YELLOW, GREEN, RED, BLUE, RESET
 
 # Domain zone transfer function
-def zone_transfer(domain, store, dirFile, vulnerability):
+def zone_transfer(domain, store, reportPath, vulnerability):
 
     print(f"\n{BLUE}[*] Starting domain zone transfer attack...\n")
     sleep(0.2)
@@ -41,7 +41,7 @@ def zone_transfer(domain, store, dirFile, vulnerability):
     if hosts:
 
         if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f = open(reportPath, "a")
             f.write(f"\n\n## Zone transfer from {domain}\n\n")
             f.write(f"The domain {domain} has {len(ns)} Name Servers:\n")
             f.write("| Name Servers |\n|--------------|\n")

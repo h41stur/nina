@@ -8,7 +8,7 @@ urllib3.disable_warnings()
 warnings.simplefilter("ignore")
 
 # Find repos function
-def find_repos(domain, store, dirFile, subs):
+def find_repos(domain, store, reportPath, subs):
 
     print(f"\n{BLUE}[*] Looking for public repositories...\n")
     sleep(0.2)
@@ -58,7 +58,7 @@ def find_repos(domain, store, dirFile, subs):
 
     if git_repo or bit or git or gitlab:
         if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f = open(reportPath, "a")
             f.write(f"\n\n## Public repositories from {domain}\n\n")
 
             if git_repo:
