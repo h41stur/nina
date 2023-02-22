@@ -7,7 +7,7 @@ from src.colors import YELLOW, GREEN, RED, BLUE, RESET
 
 
 # DNS information function
-def dns_information(domain, store, dirFile, vulnerability):
+def dns_information(domain, store, dirFile, reportPath, vulnerability):
 
     print(f"\n{BLUE}[*] Discovering some DNS information from {domain}...\n")
     sleep(0.2)
@@ -60,7 +60,7 @@ def dns_information(domain, store, dirFile, vulnerability):
 
     if mail or txt or ns:
         if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f = open(reportPath, "a")
             f.write(f"\n\n## DNS information from {domain}\n\n")
             f.write("|" + " KEY \t\t\t\t| VALUE \t\t\t|\n" + "|" + "-" *47 + "|" + "-" *23 + "|\n")
 
@@ -85,7 +85,7 @@ def dns_information(domain, store, dirFile, vulnerability):
             f.close()
 
 # Whois lookup function
-def whois_lookup(domain, store, dirFile, vulnerability):
+def whois_lookup(domain, store, reportPath, vulnerability):
 
     print(f"\n{BLUE}[*] Performing WHOIS Lookup...\n")
     import whois
@@ -107,7 +107,7 @@ def whois_lookup(domain, store, dirFile, vulnerability):
     if lookup:
 
         if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f = open(reportPath, "a")
             f.write(f"\n\n## Whois lookup from {domain}\n\n")
             f.write("|" + " KEY \t\t\t\t| VALUE \t\t\t|\n" + "|" + "-"*47 + "|" + "-"*23 + "|\n")
 

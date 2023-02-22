@@ -37,7 +37,7 @@ def subtake_request(s):
         return None
 
 # subdomain takeover function
-def subtake(domain, store, subs, dirFile, THREADS):
+def subtake(domain, store, subs, reportPath, THREADS):
 
     print(f"\n{BLUE}[*] Checking for subdomain takeover vulnerability...\n")
     sleep(0.2)
@@ -54,7 +54,7 @@ def subtake(domain, store, subs, dirFile, THREADS):
 
     if vulns:
         if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f = open(reportPath, "a")
             f.write(f"\n\n## Possible Subdomain Takeover\n\n")
             for v in vulns:
                 v = v.split(",")

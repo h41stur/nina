@@ -211,7 +211,7 @@ def cors_testing(endpoint, headers, srcPath, domain):
 
 
 # CORS misconfiguration function
-def cors(domain, store, dirFile, subs, srcPath, vulnerability, THREADS):
+def cors(domain, store, reportPath, subs, srcPath, vulnerability, THREADS):
     print(f"\n{BLUE}[*] Searching for CORS misconfiguration...\n")
     sleep(0.2)
     if domain not in subs:
@@ -273,7 +273,7 @@ def cors(domain, store, dirFile, subs, srcPath, vulnerability, THREADS):
 
         if scan:
             if store:
-                f = open(dirFile + "/" + domain + ".report.md", "a")
+                f = open(reportPath, "a")
                 f.write(f"\n\n## CORS misconfigurations\n\n")
                 f.close()
             for resp in scan:
@@ -287,7 +287,7 @@ def cors(domain, store, dirFile, subs, srcPath, vulnerability, THREADS):
                     print(f"\t{GREEN}-{RESET} ACAC header: {resp[i]['acac header']}")
                     vulnerability.append(f"WEB, CORS Misconfiguration, Certain, {resp[i]['severity']}, URL: {i}")
                     if store:
-                        f = open(dirFile + "/" + domain + ".report.md", "a")
+                        f = open(reportPath, "a")
                         f.write(f"\n\n### {i}\n\n")
                         f.write(f"\n\t- Type: {resp[i]['class']}")
                         f.write(f"\n\t- Description: {resp[i]['description']}")

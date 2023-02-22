@@ -22,6 +22,9 @@ from src.subdomain_takeover import subtake
 from src.zone_transfer import zone_transfer
 from src.subdomains import subDomain
 from src.dns_information import dns_information, whois_lookup
+from src.find_emails import find_emails
+from src.ssl_information import ssl_information
+from src.js_links import js_links
 from src.colors import YELLOW, GREEN, RED, BLUE, RESET
 
 # Color config
@@ -51,14 +54,17 @@ def arguments():
     a.add_argument("-a", "--axfr", help="Try a domain zone transfer attack", required=False, action='store_true')
     a.add_argument("--dork", help="Try some dorks", action='store_true', required=False)
     a.add_argument("-s", "--subdomains", help="Do a search for any subdomain registered", required=False, action='store_true')
-    a.add_argument("-p", "--portscan", help="Simple portscan made on https://hackertarget.com/nmap-online-port-scanner", action='store_true', required=False)
+    a.add_argument("-p", "--portscan", help="Simple portscan and banner grabbing on top 100 ports (makes a huge noise on the network).", action='store_true', required=False)
     a.add_argument("--subtake", help="Check for subdomain takeover vulnerability", required=False, action='store_true')
+    a.add_argument("--ssl", help="Extract information from SSL Certificate.", required=False, action='store_true')
+    a.add_argument("-jl", "--js-links", help="Try do find endpoints and parameters in JavaScript files.", required=False, action='store_true')
     a.add_argument("-t", "--tech", help="Try to discover technologies in the page", required=False, action='store_true')
     a.add_argument("-c", "--cors", help="Try to find CORS misconfigurations", required=False, action='store_true')
     a.add_argument("-b", "--backups", help="Try to find some commom backup files in the page. This option works better with -s enabled.", required=False, action='store_true')
     a.add_argument("-w", "--waf", help="Try to detect WAF on the page.", required=False, action='store_true')
-    a.add_argument("--hunt", help="Try to find usefull information about exploiting vectors.", required=False, action='store_true')
+    # a.add_argument("--hunt", help="Try to find usefull information about exploiting vectors.", required=False, action='store_true')
     a.add_argument("-r", "--repos", help="Try to discover valid repositories of the domain. This option works better with -s enabled.", action='store_true', required=False)
+    a.add_argument("--email", help="Try to find some emails from symem.info. Max 50 emails.", nargs='?', const=50, type=int)
     a.add_argument("--threads", help="Threads (default 5)", type=int, default=5)
     a.add_argument("-V", "--version", help="Show the version", required=False, action='store_true')
     return a.parse_args()
@@ -130,7 +136,7 @@ if __name__ == "__main__":
     
     scriptPath = pathlib.Path(__file__).parent.resolve()
     srcPath = str(scriptPath) + "/src/" 
-    version = "2.0.0"
+    version = "2.0.1"
 
     vulnerability = []
 
@@ -138,6 +144,8 @@ if __name__ == "__main__":
 
     # threads
     THREADS = parsing.threads
+    # max emails to list
+    MAX_EMAILS = parsing.email
 
     # show version
     if parsing.version:
@@ -160,7 +168,9 @@ if __name__ == "__main__":
     domain = f"{extracted.domain}.{extracted.suffix}"
     validDomain(domain)
 
+
     # check if --ouput is passed
+    reportPath = ""
     if parsing.output:
         store = 1
         dirFile = str(os.getcwd()) + "/" + domain
@@ -185,23 +195,26 @@ if __name__ == "__main__":
         subs = []
         subt = []
         if parsing.subdomains:
-            subs = subDomain(domain, store, dirFile)
+            subs = subDomain(domain, store, reportPath)
             subt = subs
         try:
-            whois_lookup(domain, store, dirFile, vulnerability)
-            dns_information(domain, store, dirFile, vulnerability)
+            whois_lookup(domain, store, reportPath, vulnerability)
+            dns_information(domain, store, dirFile, reportPath, vulnerability)
             spoof(domain, vulnerability)
             zone_transfer(domain, store, dirFile, vulnerability)
-            portscan(domain, store, dirFile, subs, THREADS)
+            portscan(domain, store, reportPath, subs, THREADS)
             if subt:
-                subtake(domain, store, subs, dirFile, THREADS)
-            cors(domain, store, dirFile, subs, srcPath, vulnerability, THREADS)
-            dorks(domain, store, dirFile)
-            search_backups(domain, store, dirFile, subs, THREADS)
-            tech(domain, store, dirFile, subs, THREADS)
-            find_repos(domain, store, dirFile, subs)
-            detect_waf(domain, store, dirFile, subs, srcPath, THREADS)
-            hunt(domain, store, dirFile, subs, srcPath, vulnerability, THREADS, url_original)
+                subtake(domain, store, subs, reportPath, THREADS)
+            ssl_information(domain, store, srcPath, reportPath, subs, THREADS)
+            js_links(domain, store, reportPath, subs, THREADS)
+            cors(domain, store, reportPath, subs, srcPath, vulnerability, THREADS)
+            dorks(domain, store, reportPath)
+            find_emails(domain, store, reportPath, MAX_EMAILS, THREADS)
+            search_backups(domain, store, reportPath, subs, THREADS)
+            tech(domain, store, reportPath, subs, THREADS)
+            find_repos(domain, store, reportPath, subs)
+            detect_waf(domain, store, reportPath, subs, srcPath, THREADS)
+            # hunt(domain, store, reportPath, subs, srcPath, vulnerability, THREADS, url_original)
             write_vulns()
         except KeyboardInterrupt:
             sys.exit(f"[{YELLOW}!{RESET}] Interrupt handler received, exiting...\n")
@@ -213,48 +226,57 @@ if __name__ == "__main__":
     try:
         # DNS information
         if parsing.dns:
-            dns_information(domain, store, dirFile, vulnerability)
+            dns_information(domain, store, dirFile, reportPath, vulnerability)
         # subdomain enumeration
         if parsing.subdomains:
-            subs = subDomain(domain, store, dirFile)
+            subs = subDomain(domain, store, reportPath)
         # subdomain takeover
         if parsing.subtake:
             if not subs:
-                subs = subDomain(domain, store, dirFile)
-            subtake(domain, store, subs, dirFile, THREADS)
+                subs = subDomain(domain, store, reportPath)
+            subtake(domain, store, subs, reportPath, THREADS)
         # Zone transfer attack
         if parsing.axfr:
             zone_transfer(domain, store, dirFile, vulnerability)
         # find repos
         if parsing.repos:
-            find_repos(domain, store, dirFile, subs)
+            find_repos(domain, store, reportPath, subs)
         # detect WAF
         if parsing.waf:
-            detect_waf(domain, store, dirFile, subs, srcPath, THREADS)
+            detect_waf(domain, store, reportPath, subs, srcPath, THREADS)
         # Perform whois lookup
         if parsing.whois:
-            whois_lookup(domain, store, dirFile, vulnerability)
+            whois_lookup(domain, store, reportPath, vulnerability)
         # search for backups
         if parsing.backups:
-            search_backups(domain, store, dirFile, subs, THREADS)
+            search_backups(domain, store, reportPath, subs, THREADS)
         # discover technologies
         if parsing.tech:
-            tech(domain, store, dirFile, subs, THREADS)
+            tech(domain, store, reportPath, subs, THREADS)
         # HUNT!
-        if parsing.hunt:
-            hunt(domain, store, dirFile, subs, srcPath, vulnerability, THREADS, url_original)
+        # if parsing.hunt:
+        #     hunt(domain, store, reportPath, subs, srcPath, vulnerability, THREADS, url_original)
         # CORS misconfiguration
         if parsing.cors:
-            cors(domain, store, dirFile, subs, srcPath, vulnerability, THREADS)
+            cors(domain, store, reportPath, subs, srcPath, vulnerability, THREADS)
         # DORKS
         if parsing.dork:
-            dorks(domain, store, dirFile)
+            dorks(domain, store, reportPath)
         # Portscan
         if parsing.portscan:
-            portscan(domain, store, dirFile, subs, THREADS)
+            portscan(domain, store, reportPath, subs, THREADS)
         # E-mail spoof
         if parsing.spoof:
             spoof(domain, vulnerability)
+        # Find emails
+        if parsing.email:
+            find_emails(domain, store, reportPath, MAX_EMAILS, THREADS)
+        # SSL certificate information
+        if parsing.ssl:
+            ssl_information(domain, store, srcPath, reportPath, subs, THREADS)
+        # JS links
+        if parsing.js_links:
+            js_links(domain, store, reportPath, subs, THREADS)
     except KeyboardInterrupt:
         sys.exit(f"[{YELLOW}!{RESET}] Interrupt handler received, exiting...\n")
 

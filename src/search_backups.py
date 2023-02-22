@@ -41,7 +41,7 @@ def request_bkp(subdomain, domain):
 
 
 # search backups function
-def search_backups(domain, store, dirFile, subs, THREADS):
+def search_backups(domain, store, reportPath, subs, THREADS):
     print(f"\n{BLUE}[*] Searching for backup files...\n")
     sleep(0.2)
     if domain not in subs:
@@ -59,7 +59,7 @@ def search_backups(domain, store, dirFile, subs, THREADS):
     if bkp:
 
         if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f = open(reportPath, "a")
             f.write(f"\n\n## Backup files found\n\n")
             f.write("|" + " URL \t\t\t\t| STATUS \t\t\t|\n" + "|" + "-" * 47 + "|" + "-" * 23 + "|\n")
 

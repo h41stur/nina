@@ -12,7 +12,13 @@ cd nina
 pip3 install -r requirements.txt
 ```
 
-## Help Panel
+## Usage
+
+```bash
+python3 nina.py -h
+```
+
+This will display help for the tool. Here are all the switches it supports.
 
 ```
     NINA RECON TOOL
@@ -25,7 +31,7 @@ pip3 install -r requirements.txt
 
       by H41stur
 
-usage: nina.py [-h] [-d DOMAIN] [-o] [-A] [--whois] [-D] [--spoof] [-a] [--dork] [-s] [-p] [--subtake] [-t] [-c] [-b] [-w] [--hunt] [-r] [--threads THREADS] [-V]
+usage: nina.py [-h] [-d DOMAIN] [-o] [-A] [--whois] [-D] [--spoof] [-a] [--dork] [-s] [-p] [--subtake] [--ssl] [-t] [-c] [-b] [-w] [--hunt] [-r] [--email [EMAIL]] [--threads THREADS] [-V]
 
 Nina Recon Tool
 
@@ -41,21 +47,55 @@ options:
   -a, --axfr            Try a domain zone transfer attack
   --dork                Try some dorks
   -s, --subdomains      Do a search for any subdomain registered
-  -p, --portscan        Simple portscan made on https://hackertarget.com/nmap-online-port-scanner
+  -p, --portscan        Simple portscan and banner grabbing on top 100 ports (makes a huge noise on the network).
   --subtake             Check for subdomain takeover vulnerability
+  --ssl                 Extract information from SSL Certificate.
+  -jl, --js-links       Try do find endpoints and parameters in JavaScript files.
   -t, --tech            Try to discover technologies in the page
   -c, --cors            Try to find CORS misconfigurations
   -b, --backups         Try to find some commom backup files in the page. This option works better with -s enabled.
   -w, --waf             Try to detect WAF on the page.
-  --hunt                Try to find usefull information about exploiting vectors.
   -r, --repos           Try to discover valid repositories of the domain. This option works better with -s enabled.
+  --email [EMAIL]       Try to find some emails from symem.info. Max 50 emails.
   --threads THREADS     Threads (default 5)
   -V, --version         Show the version
 
   ```
 
-  ### 💐💐💐 Tribute to Nina 💐💐💐
+## Features
 
-  Nina was the sweetest little dog that ever lived. She battled hard with distemper and crossed the rainbow bridge peacefully in my arms.
+:heavy_check_mark: Perform a Whois lookup.
 
-  She fought the good fight.
+:heavy_check_mark: Search for useful DNS information.
+
+:heavy_check_mark: Search for email spoofing vulnerability.
+
+:heavy_check_mark: Domain zone transfer attack.
+
+:heavy_check_mark: Perform Google dorks.
+
+:heavy_check_mark: Search for subdomains.
+
+:heavy_check_mark: Perform portscan.
+
+:heavy_check_mark: Check for subdomain takeover.
+
+:heavy_check_mark: Ennumerate some techs on pages.
+
+:heavy_check_mark: Check for CORS misconfiguration.
+
+:heavy_check_mark: Search for common backup files.
+
+:heavy_check_mark: Try to detect WAF.
+
+:heavy_check_mark: Check for common vulnerabilities, like SQLi, XSS and Open Redirect.
+
+:heavy_check_mark: Search for git repos.
+
+:heavy_check_mark: Search for employees emails.
+
+# 💐💐💐 Tribute to Nina 💐💐💐
+
+Nina was the sweetest little dog that ever lived. She battled hard with distemper and crossed the rainbow bridge peacefully in my arms.
+
+She fought the good fight.

@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 warnings.simplefilter("ignore")
 
 # Subdomain discovery function
-def subDomain(domain, store, dirFile):
+def subDomain(domain, store, reportPath):
 
     print(f"\n{BLUE}[*] Discovering subdomains from {domain}...\n")
     sleep(0.1)
@@ -109,7 +109,7 @@ def subDomain(domain, store, dirFile):
     # open file to write
     if subDoms:
         if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f = open(reportPath, "a")
             f.write(f"\n\n## Subdomains from {domain}\n\n")
             f.write("|" + " SUBDOMAINS    \t\t\t\t| IP \t\t\t|\n" + "|" + "-"*47 + "|" + "-"*23 + "|\n")
 

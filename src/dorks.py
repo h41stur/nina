@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 warnings.simplefilter("ignore")
 
 # Dorks function
-def dorks(domain, store, dirFile):
+def dorks(domain, store, reportPath):
     print(f"\n{BLUE}[*] Dorking...")
 
     links = {}
@@ -75,7 +75,7 @@ def dorks(domain, store, dirFile):
 
     if links:
         if store:
-            f = open(dirFile + "/" + domain + ".report.md", "a")
+            f = open(reportPath, "a")
             f.write(f"\n\n## Dork links\n\n")
             for l in links:
                 f.write(f"\n\n### {l}\n")
