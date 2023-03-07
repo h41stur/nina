@@ -1,6 +1,6 @@
 # Nina Recon
 
-![Nina](https://raw.githubusercontent.com/h41stur/nina/main/src/nina.jpeg)
+<center><img src="https://raw.githubusercontent.com/h41stur/nina/main/src/nina.jpeg" alt="Nina" width="400"></center>
 
 Nina is a tool disigned to perform basic recon from domains and their subdomains.
 
