@@ -201,7 +201,7 @@ if __name__ == "__main__":
             whois_lookup(domain, store, reportPath, vulnerability)
             dns_information(domain, store, dirFile, reportPath, vulnerability)
             spoof(domain, vulnerability)
-            zone_transfer(domain, store, dirFile, vulnerability)
+            zone_transfer(domain, store, reportPath, vulnerability)
             portscan(domain, store, reportPath, subs, THREADS)
             if subt:
                 subtake(domain, store, subs, reportPath, THREADS)
@@ -237,7 +237,7 @@ if __name__ == "__main__":
             subtake(domain, store, subs, reportPath, THREADS)
         # Zone transfer attack
         if parsing.axfr:
-            zone_transfer(domain, store, dirFile, vulnerability)
+            zone_transfer(domain, store, reportPath, vulnerability)
         # find repos
         if parsing.repos:
             find_repos(domain, store, reportPath, subs)

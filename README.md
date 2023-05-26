@@ -1,5 +1,9 @@
 # Nina Recon
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/h41stur/nina/main/src/nina.jpeg" alt="Nina" width="400">
+</p>
+
 Nina is a tool disigned to perform basic recon from domains and their subdomains.
 
 This tool was made thinking about saving time in the initial penetration testing / bug bounty phase.
