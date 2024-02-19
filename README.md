@@ -1,7 +1,7 @@
 # Nina Recon
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/h41stur/nina/main/src/nina.jpeg" alt="Nina" width="400">
+  <img src="https://raw.githubusercontent.com/h41stur/nina/main/nina/data/nina.jpeg" alt="Nina" width="400">
 </p>
 
 Nina is a tool disigned to perform basic recon from domains and their subdomains.
@@ -13,6 +13,8 @@ This tool was made thinking about saving time in the initial penetration testing
 ```bash
 git clone https://github.com/h41stur/nina.git
 cd nina
+python3 -m venv venv
+source venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
@@ -25,17 +27,17 @@ python3 nina.py -h
 This will display help for the tool. Here are all the switches it supports.
 
 ```
-    NINA RECON TOOL
+            NINA RECON TOOL
 
-              .--~~,__
- :-....,-------`~~'._.'
-  `-,,,  ,_      ;'~U'
-   _,-' ,'`-__; '--.
-  (_/'~~      ''''(;
+                      .--~~,__
+         :-....,-------`~~'._.'
+          `-,,,  ,_      ;'~U'
+           _,-' ,'`-__; '--.
+          (_/'~~      ''''(;
 
-      by H41stur
+              by H41stur
 
-usage: nina.py [-h] [-d DOMAIN] [-o] [-A] [--whois] [-D] [--spoof] [-a] [--dork] [-s] [-p] [--subtake] [--ssl] [-t] [-c] [-b] [-w] [--hunt] [-r] [--email [EMAIL]] [--threads THREADS] [-V]
+usage: nina.py [-h] [-d DOMAIN] [-o] [-pr] [-A] [-l LIMIT] [--threads THREADS] [-V] [-p] [-js] [-t] [-b] [-w] [-gh] [--hunter] [--intelx] [--whois] [-D] [--dork] [-s] [--ssl] [-r] [--spoof] [-a] [--subtake] [-c]
 
 Nina Recon Tool
 
@@ -44,25 +46,36 @@ options:
   -d DOMAIN, --domain DOMAIN
                         Domain to start recon
   -o, --output          Save a directory containing Markdown file with recon report.
+  -pr, --proxy          Use a proxy for requests, example: http://127.0.0.1:8080
   -A, --all             Permorm all options at once, except -s and -o (which can be added manually)
-  --whois               Perform a Whois lookup.
-  -D, --dns             Look for some DNS information
-  --spoof               Check if domain can be spoofed based on SPF and DMARC records
-  -a, --axfr            Try a domain zone transfer attack
-  --dork                Try some dorks
-  -s, --subdomains      Do a search for any subdomain registered
-  -p, --portscan        Simple portscan and banner grabbing on top 100 ports (makes a huge noise on the network).
-  --subtake             Check for subdomain takeover vulnerability
-  --ssl                 Extract information from SSL Certificate.
-  -jl, --js-links       Try do find endpoints and parameters in JavaScript files.
-  -t, --tech            Try to discover technologies in the page
-  -c, --cors            Try to find CORS misconfigurations
-  -b, --backups         Try to find some commom backup files in the page. This option works better with -s enabled.
-  -w, --waf             Try to detect WAF on the page.
-  -r, --repos           Try to discover valid repositories of the domain. This option works better with -s enabled.
-  --email [EMAIL]       Try to find some emails from symem.info. Max 50 emails.
+  -l LIMIT, --limit LIMIT
+                        Limit the number of search results, (default 500).
   --threads THREADS     Threads (default 5)
   -V, --version         Show the version
+
+Discovery:
+  -p, --portscan        Simple portscan and banner grabbing on top 100 ports (makes a huge noise on the network).
+  -js, --js-links       Try do find endpoints and parameters in JavaScript files.
+  -t, --tech            Try to discover technologies in the page
+  -b, --backups         Try to find some commom backup files in the page. This option works better with -s enabled.
+  -w, --waf             Try to detect WAF on the page.
+
+OSINT:
+  -gh, --github         Search for GitHub codes (GitHub API Key required)
+  --hunter              Search for emails on hunter.io (GitHub API Key required)
+  --intelx              Search informations on intelx.io (GitHub API Key required)
+  --whois               Perform a Whois lookup.
+  -D, --dns             Look for some DNS information
+  --dork                Try some Google dorks
+  -s, --subdomains      Do a search for any subdomain registered
+  --ssl                 Extract information from SSL Certificate.
+  -r, --repos           Try to discover valid repositories of the domain. This option works better with -s enabled.
+
+Vulns:
+  --spoof               Check if domain can be spoofed based on SPF and DMARC records
+  -a, --axfr            Try a domain zone transfer attack
+  --subtake             Check for subdomain takeover vulnerability
+  -c, --cors            Try to find CORS misconfigurations
 
   ```
 
