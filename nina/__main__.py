@@ -1,10 +1,8 @@
-import asyncio
 import sys
 import argparse
 import tldextract
 import socket
 from pathlib import Path
-from typing import Optional
 from nina.lib.colors import *
 from nina.lib.core import Core
 from typing import List
