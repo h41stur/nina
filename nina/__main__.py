@@ -98,10 +98,10 @@ async def start():
         "-o", "--output", help="Save a directory containing Markdown file with recon report.",
         required=False, action='store_true'
     )
-    parser.add_argument(
-        "-pr", "--proxy", help="Use a proxy for requests, example: http://127.0.0.1:8080",
-        required=False, action='store_true'
-    )
+    # parser.add_argument(
+    #     "-pr", "--proxy", help="Use a proxy for requests, example: http://127.0.0.1:8080",
+    #     required=False, action='store_true'
+    # )
     parser.add_argument(
         "-A", "--all", help="Permorm all options at once, except -s and -o (which can be added manually)",
         required=False, action='store_true'

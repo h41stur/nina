@@ -46,7 +46,6 @@ options:
   -d DOMAIN, --domain DOMAIN
                         Domain to start recon
   -o, --output          Save a directory containing Markdown file with recon report.
-  -pr, --proxy          Use a proxy for requests, example: http://127.0.0.1:8080
   -A, --all             Permorm all options at once, except -s and -o (which can be added manually)
   -l LIMIT, --limit LIMIT
                         Limit the number of search results, (default 500).
