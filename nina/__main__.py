@@ -142,11 +142,11 @@ async def start():
     )
     osint.add_argument(
         "--hunter",
-        help="Search for emails on hunter.io (GitHub API Key required)", required=False, action='store_true'
+        help="Search for emails on hunter.io (Hunter.io API Key required)", required=False, action='store_true'
     )
     osint.add_argument(
         "--intelx",
-        help="Search informations on intelx.io (GitHub API Key required)", required=False, action='store_true'
+        help="Search informations on intelx.io (IntelX API Key required)", required=False, action='store_true'
     )
     osint.add_argument(
         "--whois", help="Perform a Whois lookup.", required=False, action='store_true'
