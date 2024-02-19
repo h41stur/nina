@@ -78,6 +78,10 @@ Vulns:
 
   ```
 
+## API Keys
+
+API Keys can be edited on **nina/data/api-keys.yaml**
+
 ## Features
 
 :heavy_check_mark: Perform a Whois lookup.
