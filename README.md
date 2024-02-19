@@ -63,6 +63,7 @@ OSINT:
   -gh, --github         Search for GitHub codes (GitHub API Key required)
   --hunter              Search for emails on hunter.io (Hunter.io API Key required)
   --intelx              Search informations on intelx.io (IntelX API Key required)
+  --dehashed            Search informations on dehashed.com (DeHashed API Key required)
   --whois               Perform a Whois lookup.
   -D, --dns             Look for some DNS information
   --dork                Try some Google dorks

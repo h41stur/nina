@@ -1,7 +1,7 @@
 from __future__ import annotations
 import random
 import yaml
-from typing import Optional
+from typing import Optional, Union, Any
 from pathlib import Path
 from nina.lib.colors import *
 
@@ -148,6 +148,11 @@ class Core:
     @staticmethod
     def intelx_key() -> str:
         return Core.get_api_keys()["intelx"]["key"]
+
+    @staticmethod
+    def dehashed_key() -> Union[Any, Any]:
+        return (Core.get_api_keys()["dehashed"]["username"],
+                Core.get_api_keys()["dehashed"]["key"])
 
     @staticmethod
     def delay() -> float:

@@ -22,6 +22,7 @@ from nina.osint import (
     github,
     hunter,
     intelx,
+    dehashed,
 )
 from nina.vulns import (
     email_spoof,
@@ -147,6 +148,10 @@ async def start():
         help="Search informations on intelx.io (IntelX API Key required)", required=False, action='store_true'
     )
     osint.add_argument(
+        "--dehashed",
+        help="Search informations on dehashed.com (DeHashed API Key required)", required=False, action='store_true'
+    )
+    osint.add_argument(
         "--whois", help="Perform a Whois lookup.", required=False, action='store_true'
     )
     osint.add_argument(
@@ -262,6 +267,7 @@ async def start():
             await github.SearchGithub(corp, limit, DATA_DIR, store, report_path).search()
             await hunter.SearchHunter(domain, limit, DATA_DIR, store, report_path).search()
             await intelx.SearchIntelx(domain, DATA_DIR, store, report_path).search()
+            await dehashed.SearchDehashed(domain, DATA_DIR, store, report_path).search()
             write_vulns(vulnerability, store, report_path)
             sys.exit(1)
 
@@ -334,6 +340,9 @@ async def start():
         # IntelX search
         if args.intelx:
             await intelx.SearchIntelx(domain, DATA_DIR, store, report_path).search()
+        # DeHashed search
+        if args.dehashed:
+            await dehashed.SearchDehashed(domain, DATA_DIR, store, report_path).search()
     except KeyboardInterrupt:
         warning_message("Interrupt handler received, exiting...\n")
         exit(1)
